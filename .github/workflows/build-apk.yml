@@ -22,9 +22,9 @@ jobs:
 
       - name: 📦 Bog'liqliklarni o'rnatish
         working-directory: LotoApp
-        run: npm install
+        run: npx expo install --fix
 
-      - name: 🔧 Expo CLI o'rnatish (latest)
+      - name: 🔧 EAS CLI o'rnatish
         working-directory: LotoApp
         run: npm install -g eas-cli@latest
 
