@@ -15,14 +15,16 @@ jobs:
       - name: 📥 Repositoryni yuklab olish
         uses: actions/checkout@v4
 
-      - name: 🟢 Node.js 18 o'rnatish
+      - name: 🟢 Node.js 20 o'rnatish
         uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
 
       - name: 📦 Bog'liqliklarni o'rnatish
         working-directory: LotoApp
-        run: npx expo install --fix
+        run: |
+          npm install
+          npx expo install --fix
 
       - name: 🔧 EAS CLI o'rnatish
         working-directory: LotoApp
