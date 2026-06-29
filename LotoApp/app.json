@@ -25,9 +25,6 @@
       "package": "com.lotoapp.game",
       "versionCode": 6
     },
-    "plugins": [
-      "react-native-gesture-handler"
-    ],
     "extra": {
       "eas": {
         "projectId": "0374b9d4-4d61-4fd0-b602-ed1c6da6e8fc"
