@@ -33,30 +33,33 @@ jobs:
       - name: 🔧 EAS CLI o'rnatish
         run: npm install -g eas-cli@latest
 
-      - name: 🤖 EAS Build (APK)
+      - name: 🤖 EAS Build + APK yuklab olish
         working-directory: LotoApp
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
         run: |
           echo "=== EAS Build boshlanmoqda ==="
-          eas build -p android --profile preview --non-interactive --wait 2>&1 | tee build-output.txt
-          echo "=== Build natijasi ==="
-          cat build-output.txt
-
-      - name: 📥 APK yuklab olish
-        working-directory: LotoApp
-        env:
-          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
-        run: |
-          APK_URL=$(grep -oE 'https://expo\.dev/artifacts/eas/[^[:space:]]+\.apk' build-output.txt | tail -1)
+          BUILD_OUTPUT=$(eas build -p android --profile preview --non-interactive --wait 2>&1)
+          BUILD_EXIT=$?
+          echo "$BUILD_OUTPUT"
+          echo "=== Build exit code: $BUILD_EXIT ==="
+          if [ $BUILD_EXIT -ne 0 ]; then
+            echo "⚠️ EAS Build xatolik bilan tugadi."
+            exit 1
+          fi
+          echo ""
+          echo "=== APK URL qidirilmoqda ==="
+          APK_URL=$(echo "$BUILD_OUTPUT" | grep -oP 'https?://[^[:space:]]*\.apk' | tail -1)
+          if [ -z "$APK_URL" ]; then
+            APK_URL=$(echo "$BUILD_OUTPUT" | grep -oP 'https?://expo\.dev/[^[:space:]]+' | tail -1)
+          fi
           if [ -n "$APK_URL" ]; then
             echo "✅ APK URL: $APK_URL"
             curl -L -o loto-app.apk "$APK_URL"
             ls -lah loto-app.apk
             echo "✅ APK muvaffaqiyatli yuklandi!"
           else
-            echo "⚠️ APK URL topilmadi. Build loglari:"
-            cat build-output.txt
+            echo "⚠️ APK URL topilmadi (regex mos kelmadi)."
             echo "📌 EAS Dashboard: https://expo.dev/accounts/katush.uz/projects/loto-app/builds"
             exit 1
           fi
