@@ -3,9 +3,13 @@ name: Build Loto APK
 on:
   push:
     branches: [ main, master ]
-  pull_request:
-    branches: [ main, master ]
-  workflow_dispatch:  # Qo'lda ishga tushirish
+  workflow_dispatch:
+    inputs:
+      expo_token:
+        description: 'Expo Access Token'
+        required: true
+        type: string
+        default: ''
 
 jobs:
   build-android:
@@ -35,14 +39,14 @@ jobs:
       - name: 🤖 EAS Build (APK)
         working-directory: LotoApp
         env:
-          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+          EXPO_TOKEN: ${{ github.event.inputs.expo_token || secrets.EXPO_TOKEN }}
         run: |
           eas build -p android --profile preview --non-interactive --wait
 
       - name: 📱 APK faylni yuklash (artifact)
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: loto-app-release
           path: LotoApp/*.apk
           retention-days: 90
-          compression-level: 9
