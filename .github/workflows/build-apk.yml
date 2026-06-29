@@ -49,30 +49,24 @@ jobs:
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
         run: |
-          echo "=== Oxirgi qurilish ma'lumotlari olinmoqda ==="
-          curl -s -H "Authorization: Bearer $EXPO_TOKEN" \
-            "https://api.expo.dev/v2/projects/loto-app/builds?platform=ANDROID&status=FINISHED&limit=1" \
-            -o builds.json
-          node -e "
-            var d = require('./builds.json');
-            if (d.data && d.data.length > 0) {
-              var b = d.data[0];
-              console.log('Build ID: ' + b.id);
-              console.log('Platform: ' + b.platform);
-              console.log('Status: ' + b.status);
-              if (b.artifacts && b.artifacts.buildUrl) {
-                console.log('APK_URL=' + b.artifacts.buildUrl);
-              } else {
-                console.log('No artifact URL available');
+          echo "=== Oxirgi qurilish ma'lumotlari GraphQL orqali olinmoqda ==="
+          APP_ID="0374b9d4-4d61-4fd0-b602-ed1c6da6e8fc"
+          curl -s -X POST "https://api.expo.dev/graphql" \
+            -H "Content-Type: application/json" \
+            -H "Authorization: Bearer $EXPO_TOKEN" \
+            -d "{\"query\":\"{ app { byId(appId:\\\"$APP_ID\\\") { builds(limit:1, offset:0, status:FINISHED) { id status platform artifacts { buildUrl } } } } }\"}" \
+            -o builds-graphql.json
+          APK_URL=$(node -e "
+            try {
+              var d = require('./builds-graphql.json');
+              var builds = d.data.app.byId.builds;
+              if (builds && builds.length > 0 && builds[0].artifacts) {
+                console.log(builds[0].artifacts.buildUrl || '');
               }
-            } else {
-              console.log('No builds found');
-            }
-          " > build-info.txt
-          cat build-info.txt
-          APK_URL=$(grep "APK_URL=" build-info.txt | cut -d'=' -f2-)
+            } catch(e) { console.error(e.message); }
+          ")
           if [ -n "$APK_URL" ]; then
-            echo "=== APK yuklanmoqda ==="
+            echo "=== APK yuklanmoqda: $APK_URL ==="
             curl -L -o loto-app.apk "$APK_URL"
             if [ -f loto-app.apk ]; then
               ls -la loto-app.apk
