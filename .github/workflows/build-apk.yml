@@ -19,12 +19,10 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 18
-          cache: 'npm'
-          cache-dependency-path: LotoApp/package-lock.json
 
       - name: 📦 Bog'liqliklarni o'rnatish
         working-directory: LotoApp
-        run: npm ci || npm install
+        run: npm install
 
       - name: 🔧 Expo CLI o'rnatish
         working-directory: LotoApp
