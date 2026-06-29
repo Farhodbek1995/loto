@@ -1,4 +1,4 @@
-name: Build Loto APK
+name: Build Loto APK (lokal)
 
 on:
   push:
@@ -20,11 +20,17 @@ jobs:
         with:
           node-version: 22
 
+      - name: ☕ Java 17 o'rnatish
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
       - name: 📦 Node modules keshlash
         uses: actions/cache@v4
         with:
           path: LotoApp/node_modules
-          key: node-modules-v3-${{ runner.os }}-${{ hashFiles('LotoApp/package-lock.json') }}
+          key: node-modules-v4-${{ runner.os }}-${{ hashFiles('LotoApp/package-lock.json') }}
 
       - name: 📦 Bog'liqliklarni o'rnatish
         working-directory: LotoApp
@@ -32,48 +38,48 @@ jobs:
           node --version
           npm --version
           npm install --legacy-peer-deps
-          ls node_modules/expo/package.json && echo "✅ expo installed" || echo "❌ expo NOT installed"
+          ls node_modules/expo/package.json && echo "✅ expo installed" || { echo "❌ expo NOT installed"; exit 1; }
 
-      - name: 🔧 EAS CLI o'rnatish
-        run: npm install -g eas-cli@latest
-
-      - name: 🤖 EAS Build (APK)
-        working-directory: LotoApp
-        env:
-          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+      - name: 🔧 Android SDK setup
         run: |
-          set -o pipefail
-          eas build -p android --profile preview --non-interactive --wait 2>&1 | tee build-output.txt
-          BUILD_EXIT=$?
-          echo ""
-          echo "=== Build exit code: $BUILD_EXIT ==="
-          if [ $BUILD_EXIT -ne 0 ]; then
-            echo "❌ EAS Build xatolik bilan yakunlandi!"
-            echo "=== Build log oxiri ==="
-            tail -100 build-output.txt
-            exit 1
-          fi
-          echo ""
-          echo "======================================"
-          echo "✅ BUILD MUVAFFAQIYATLI YAKUNLANDI!"
-          echo "======================================"
-          echo ""
+          echo "ANDROID_HOME=$ANDROID_HOME"
+          echo "ANDROID_SDK_ROOT=$ANDROID_SDK_ROOT"
+          $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --list 2>&1 | head -5 || true
 
-      - name: 📥 APK yuklab olish
+      - name: 🏗️ Expo Prebuild (android papkasini yaratish)
         working-directory: LotoApp
         run: |
-          APK_URL=$(grep -oP 'https?://[^[:space:]]*\.apk' build-output.txt | tail -1)
-          if [ -z "$APK_URL" ]; then
-            echo "⚠️ APK URL topilmadi (regex mos kelmadi)."
-            echo "=== Build log oxiri ==="
-            tail -50 build-output.txt
-            echo "📌 EAS Dashboard: https://expo.dev/accounts/katush.uz/projects/loto-app/builds"
+          npx expo prebuild --platform android --clean
+          echo "=== android/ papkasi yaratildi ==="
+          ls -la android/
+
+      - name: 📝 Gradle wrapper ruxsat berish
+        working-directory: LotoApp/android
+        run: chmod +x gradlew
+
+      - name: 🔨 Gradle bilan APK build qilish
+        working-directory: LotoApp/android
+        run: |
+          ./gradlew assembleDebug --stacktrace
+          echo "=== APK qidirilmoqda ==="
+          find . -name "*.apk" -type f
+
+      - name: 📤 APK ni topish va ko'chirish
+        working-directory: LotoApp
+        run: |
+          APK_PATH=$(find android -name "*.apk" -path "*/release/*" -type f | head -1)
+          if [ -z "$APK_PATH" ]; then
+            APK_PATH=$(find android -name "*.apk" -type f | head -1)
+          fi
+          if [ -z "$APK_PATH" ]; then
+            echo "❌ APK topilmadi!"
+            find android -name "*.apk" -type f 2>/dev/null || echo "Hech qanday APK fayli yo'q"
             exit 1
           fi
-          echo "✅ APK URL: $APK_URL"
-          curl -L -o loto-app.apk "$APK_URL"
+          echo "✅ APK: $APK_PATH"
+          cp "$APK_PATH" ./loto-app.apk
           ls -lah loto-app.apk
-          echo "✅ APK muvaffaqiyatli yuklandi!"
+          echo "✅ APK tayyor!"
 
       - name: 📱 APK artifact sifatida saqlash
         if: always()
