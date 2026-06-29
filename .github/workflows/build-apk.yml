@@ -53,6 +53,19 @@ jobs:
           echo "=== android/ papkasi yaratildi ==="
           ls -la android/
 
+      - name: 📦 JS Bundle yaratish (index.android.bundle)
+        working-directory: LotoApp
+        run: |
+          mkdir -p android/app/src/main/assets
+          npx react-native bundle \
+            --platform android \
+            --dev false \
+            --entry-file App.js \
+            --bundle-output android/app/src/main/assets/index.android.bundle \
+            --assets-dest android/app/src/main/res/
+          echo "=== Bundle yaratildi ==="
+          ls -lah android/app/src/main/assets/index.android.bundle
+
       - name: 📝 Gradle wrapper ruxsat berish
         working-directory: LotoApp/android
         run: chmod +x gradlew
