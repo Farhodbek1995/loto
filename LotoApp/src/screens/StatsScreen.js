@@ -36,7 +36,14 @@ export default function StatsScreen({ navigation }) {
     );
   }
 
-  const { totalGames, wins, rows, twoRows, fullHouses, totalDraws } = stats;
+    const {
+      totalGames = 0,
+      wins = 0,
+      rows = 0,
+      twoRows = 0,
+      fullHouses = 0,
+      totalDraws = 0,
+    } = stats || {};
   const winRate = totalGames > 0 ? Math.round((wins / totalGames) * 100) : 0;
   const avgDraws = totalGames > 0 ? Math.round(totalDraws / totalGames) : 0;
 

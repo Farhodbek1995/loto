@@ -1,0 +1,47 @@
+# Node
+node_modules/
+npm-debug.*
+
+# Expo
+.expo/
+dist/
+web-build/
+
+# Native
+android/
+ios/
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+
+# Build outputs
+*.apk
+*.aab
+*.zip
+
+# Logs & temp
+*.log
+*.zip
+job-logs/
+apk-unzipped/
+
+# Environment
+.env
+
+# Project files (not needed in repo)
+artifacts-check.json
+builds.json
+expo-builds.json
+expo-projects.json
+graphql-result.json
+jobs-check.json
+latest-run.json
+logs10.txt
+me.json
+run10.json
+run14.json
+build13-logs.zip
+job-logs-12.zip
+job-logs.zip

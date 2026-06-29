@@ -9,8 +9,8 @@ import ProgressBar from '../components/ProgressBar';
 import Header from '../components/Header';
 import { GameState } from '../engine/GameState';
 import { WinDetector } from '../engine/WinDetector';
-import { COLORS, GAME_MODES, FAST_DRAW_INTERVAL, WIN_TYPES } from '../utils/constants';
-import { saveGameResult } from '../storage/StatsStorage';
+import { COLORS, GAME_MODES, WIN_TYPES, DEFAULT_SETTINGS } from '../utils/constants';
+import { saveGameResult, getSettings } from '../storage/StatsStorage';
 
 /**
  * Asosiy o'yin ekrani.
@@ -22,6 +22,7 @@ export default function GameScreen({ route, navigation }) {
 
   const gameRef = useRef(null);
   const fastTimerRef = useRef(null);
+  const settingsRef = useRef(null);
 
   const [gameState, setGameState] = useState(null);
   const [lastWin, setLastWin] = useState(null);
@@ -43,8 +44,8 @@ export default function GameScreen({ route, navigation }) {
 
     const result = gameRef.current.drawNumber();
 
-    if (result.error) {
-      Alert.alert('Diqqat', result.error);
+    if (!result || result.error) {
+      if (result?.error) Alert.alert('Diqqat', result.error);
       return;
     }
 
@@ -64,14 +65,28 @@ export default function GameScreen({ route, navigation }) {
     if (!isFastMode || !gameRef.current) return;
     if (!gameRef.current.isPlaying || gameRef.current.isGameOver) return;
 
+    const interval = settingsRef.current?.fastDrawInterval || DEFAULT_SETTINGS.fastDrawInterval;
+
     fastTimerRef.current = setInterval(() => {
+      // O'yin tugagan bo'lsa intervalni to'xtatish
+      if (gameRef.current?.isGameOver) {
+        if (fastTimerRef.current) clearInterval(fastTimerRef.current);
+        return;
+      }
       drawNumber();
-    }, FAST_DRAW_INTERVAL);
+    }, interval);
 
     return () => {
       if (fastTimerRef.current) clearInterval(fastTimerRef.current);
     };
   }, [isFastMode, gameState?.isPlaying, gameState?.isGameOver, drawNumber]);
+
+  // Sozlamalarni yuklash va intervalni sozlash
+  useEffect(() => {
+    getSettings().then(s => {
+      settingsRef.current = s;
+    });
+  }, []);
 
   // Start on mount
   useEffect(() => {
@@ -179,6 +194,7 @@ export default function GameScreen({ route, navigation }) {
               onPress={() => {}}
               disabled={true}
               drawnCount={90}
+              isFastMode={false}
             />
             <View style={styles.gameOverActions}>
               <DrawButton

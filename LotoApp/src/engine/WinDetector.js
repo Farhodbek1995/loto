@@ -16,19 +16,19 @@ export class WinDetector {
     // Har bir qatorni tekshirish
     for (let row = 0; row < ROWS; row++) {
       const markedInRow = card[row].filter(cell => cell && cell.marked).length;
-      if (markedInRow === NUMBERS_PER_ROW) {
+      if (markedInRow >= NUMBERS_PER_ROW) {
         completedRows++;
         lastCompletedRow = row;
       }
     }
 
-    if (completedRows === ROWS) {
+    if (completedRows >= ROWS) {
       return { type: WIN_TYPES.FULL_HOUSE, row: null };
     }
-    if (completedRows === 2) {
+    if (completedRows >= 2) {
       return { type: WIN_TYPES.TWO_ROWS, row: lastCompletedRow };
     }
-    if (completedRows === 1) {
+    if (completedRows >= 1) {
       return { type: WIN_TYPES.ROW, row: lastCompletedRow };
     }
     return { type: WIN_TYPES.NONE, row: null };
@@ -43,7 +43,7 @@ export class WinDetector {
   static checkWinAfterMark(card, lastMarkedRow) {
     const markedInRow = card[lastMarkedRow].filter(cell => cell && cell.marked).length;
 
-    if (markedInRow !== NUMBERS_PER_ROW) {
+    if (markedInRow < NUMBERS_PER_ROW) {
       return { type: WIN_TYPES.NONE, row: null };
     }
 

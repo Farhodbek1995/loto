@@ -31,6 +31,7 @@ export class NumberDrawer {
   /**
    * Navbatdagi raqamni chiqarish
    * @returns {{ number: number, drawnCount: number, totalCount: number } | null}
+   * - null qaytsa, barcha 90 ta raqam chiqarib bo'lingan
    */
   draw() {
     if (this.remainingNumbers.length === 0) {

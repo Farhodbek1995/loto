@@ -42,7 +42,8 @@ export class GameState {
     if (!result) {
       this.isGameOver = true;
       this.isPlaying = false;
-      return { ...this.getState(), error: 'Barcha raqamlar chiqarib bo\'lindi' };
+      // Barcha raqamlar chiqqan bo'lsa, full house bo'lmasa ham o'yin tugadi deb hisoblaymiz
+      return { ...this.getState(), isGameOver: true, error: 'Barcha raqamlar chiqarib bo\'lindi' };
     }
 
     this.currentNumber = result.number;

@@ -81,7 +81,10 @@ export default function WinScreen({ route, navigation }) {
       <View style={styles.buttonSection}>
         <TouchableOpacity
           style={styles.playAgainBtn}
-          onPress={() => navigation.navigate('Game', { mode: mode || GAME_MODES.SIMPLE })}
+          onPress={() => {
+            // "replace" ishlatamiz, chunki orqaga qaytganda WinScreen ga qaytish kerak emas
+            navigation.replace('Game', { mode: mode || GAME_MODES.SIMPLE });
+          }}
           activeOpacity={0.7}
         >
           <Text style={styles.playAgainText}>🔄 Yana O'ynash</Text>

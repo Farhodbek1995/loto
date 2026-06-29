@@ -3,7 +3,7 @@
     "name": "Loto Online",
     "slug": "loto-app",
     "version": "1.0.0",
-    "jsEngine": "jsc",
+    "jsEngine": "hermes",
     "sdkVersion": "52.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -23,9 +23,11 @@
         "backgroundColor": "#1A1A2E"
       },
       "package": "com.lotoapp.game",
-      "versionCode": 5
+      "versionCode": 6
     },
-    "plugins": [],
+    "plugins": [
+      "react-native-gesture-handler"
+    ],
     "extra": {
       "eas": {
         "projectId": "0374b9d4-4d61-4fd0-b602-ed1c6da6e8fc"
