@@ -42,7 +42,48 @@ jobs:
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
         run: |
-          eas build -p android --profile preview --non-interactive --wait
+          eas build -p android --profile preview --non-interactive --wait 2>&1 | tee build-output.txt
+
+      - name: 📥 APK yuklab olish (EAS serverdan)
+        working-directory: LotoApp
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+        run: |
+          echo "=== Oxirgi qurilish ma'lumotlari olinmoqda ==="
+          curl -s -H "Authorization: Bearer $EXPO_TOKEN" \
+            "https://api.expo.dev/v2/projects/loto-app/builds?platform=ANDROID&status=FINISHED&limit=1" \
+            -o builds.json
+          node -e "
+            var d = require('./builds.json');
+            if (d.data && d.data.length > 0) {
+              var b = d.data[0];
+              console.log('Build ID: ' + b.id);
+              console.log('Platform: ' + b.platform);
+              console.log('Status: ' + b.status);
+              if (b.artifacts && b.artifacts.buildUrl) {
+                console.log('APK_URL=' + b.artifacts.buildUrl);
+              } else {
+                console.log('No artifact URL available');
+              }
+            } else {
+              console.log('No builds found');
+            }
+          " > build-info.txt
+          cat build-info.txt
+          APK_URL=$(grep "APK_URL=" build-info.txt | cut -d'=' -f2-)
+          if [ -n "$APK_URL" ]; then
+            echo "=== APK yuklanmoqda ==="
+            curl -L -o loto-app.apk "$APK_URL"
+            if [ -f loto-app.apk ]; then
+              ls -la loto-app.apk
+              echo "APK muvaffaqiyatli yuklandi!"
+            else
+              echo "APK yuklab olinmadi"
+            fi
+          else
+            echo "=== APK URL topilmadi ==="
+            echo "Expo Dashboard: https://expo.dev/accounts/Farhodbek1995/projects/loto-app/builds"
+          fi
 
       - name: 📱 APK faylni artifact sifatida yuklash
         if: always()
