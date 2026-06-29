@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { createStackNavigator, CardStyleInterpolators } from '@react-navigation/stack';
 import MainMenuScreen from '../screens/MainMenuScreen';
 import GameScreen from '../screens/GameScreen';
 import WinScreen from '../screens/WinScreen';
@@ -8,7 +8,7 @@ import SettingsScreen from '../screens/SettingsScreen';
 import StatsScreen from '../screens/StatsScreen';
 import { COLORS } from '../utils/constants';
 
-const Stack = createNativeStackNavigator();
+const Stack = createStackNavigator();
 
 export default function AppNavigator() {
   return (
@@ -17,8 +17,8 @@ export default function AppNavigator() {
         initialRouteName="MainMenu"
         screenOptions={{
           headerShown: false,
-          contentStyle: { backgroundColor: COLORS.BG_DARK },
-          animation: 'slide_from_right',
+          cardStyle: { backgroundColor: COLORS.BG_DARK },
+          cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
         }}
       >
         <Stack.Screen name="MainMenu" component={MainMenuScreen} />
