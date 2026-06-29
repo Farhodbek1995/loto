@@ -28,6 +28,20 @@ jobs:
         working-directory: LotoApp
         run: npm install -g eas-cli
 
+      - name: 🔗 EAS Loyihasini sozlash (eas init)
+        working-directory: LotoApp
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+        run: |
+          eas init --non-interactive --id com.lotoapp.game || echo "Project already configured"
+
+      - name: 🏗️ EAS Build Konfiguratsiyasi
+        working-directory: LotoApp
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+        run: |
+          eas build:configure --platform android --non-interactive || echo "Already configured"
+
       - name: 🤖 EAS Build (APK)
         working-directory: LotoApp
         env:
