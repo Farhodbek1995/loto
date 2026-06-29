@@ -4,12 +4,6 @@ on:
   push:
     branches: [ main, master ]
   workflow_dispatch:
-    inputs:
-      expo_token:
-        description: 'Expo Access Token'
-        required: true
-        type: string
-        default: ''
 
 jobs:
   build-android:
@@ -39,11 +33,11 @@ jobs:
       - name: 🤖 EAS Build (APK)
         working-directory: LotoApp
         env:
-          EXPO_TOKEN: ${{ github.event.inputs.expo_token || secrets.EXPO_TOKEN }}
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
         run: |
           eas build -p android --profile preview --non-interactive --wait
 
-      - name: 📱 APK faylni yuklash (artifact)
+      - name: 📱 APK faylni artifact sifatida yuklash
         if: always()
         uses: actions/upload-artifact@v4
         with:
