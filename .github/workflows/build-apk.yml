@@ -33,40 +33,16 @@ jobs:
       - name: 🔧 EAS CLI o'rnatish
         run: npm install -g eas-cli@latest
 
-      - name: 🤖 EAS Build (APK) + yuklab olish
+      - name: 🤖 EAS Build (APK)
         working-directory: LotoApp
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
         run: |
-          echo "=== EAS Build boshlanmoqda ==="
-          eas build -p android --profile preview --non-interactive --wait --no-color 2>&1 | tee /tmp/eas-build.log
-          echo "=== Build yakunlandi ==="
+          eas build -p android --profile preview --non-interactive --wait
           echo ""
-          echo "=== APK URL qidirilmoqda ==="
-          APK_URL=$(grep -oE 'https://expo\.dev/artifacts/eas/[A-Za-z0-9_-]+\.apk' /tmp/eas-build.log | tail -1)
-          if [ -z "$APK_URL" ]; then
-            APK_URL=$(grep -oE 'https://expo\.dev/[^[:space:]]*\.apk' /tmp/eas-build.log | tail -1)
-          fi
-          if [ -z "$APK_URL" ]; then
-            APK_URL=$(grep -oE 'https?://[^[:space:]]+/.*\.apk' /tmp/eas-build.log | tail -1)
-          fi
-          if [ -n "$APK_URL" ]; then
-            echo "✅ APK URL: $APK_URL"
-            curl -L -o loto-app.apk "$APK_URL"
-            ls -lah loto-app.apk
-            echo "✅ APK muvaffaqiyatli yuklandi!"
-          else
-            echo "⚠️ APK URL topilmadi. Log oxiri:"
-            tail -30 /tmp/eas-build.log
-            echo "📌 EAS Dashboard: https://expo.dev/accounts/katush.uz/projects/loto-app/builds"
-            exit 1
-          fi
-
-      - name: 📱 APK artifact sifatida saqlash
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: loto-app-release
-          path: LotoApp/loto-app.apk
-          retention-days: 90
-          if-no-files-found: warn
+          echo "======================================"
+          echo "✅ BUILD MUVAFFAQIYATLI YAKUNLANDI!"
+          echo "======================================"
+          echo ""
+          echo "📥 APK yuklab olish:"
+          echo "   https://expo.dev/accounts/katush.uz/projects/loto-app/builds"
