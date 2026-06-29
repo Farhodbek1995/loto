@@ -22,9 +22,6 @@
       "package": "com.lotoapp.game",
       "versionCode": 1
     },
-    "plugins": [
-      "expo-font",
-      "expo-av"
-    ]
+    "plugins": []
   }
 }
