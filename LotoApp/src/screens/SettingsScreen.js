@@ -5,6 +5,7 @@ import {
 import Header from '../components/Header';
 import { COLORS } from '../utils/constants';
 import { getSettings, saveSettings } from '../storage/StatsStorage';
+import { setSoundEnabled } from '../utils/sound';
 
 /**
  * Sozlamalar ekrani.
@@ -13,13 +14,21 @@ export default function SettingsScreen({ navigation }) {
   const [settings, setSettings] = useState(null);
 
   useEffect(() => {
-    getSettings().then(setSettings);
+    getSettings().then(s => {
+      setSettings(s);
+      // Ovoz sozlamasini sound moduliga ham uzatish
+      setSoundEnabled(s.soundEnabled !== false);
+    });
   }, []);
 
   const updateSetting = async (key, value) => {
     const newSettings = { ...settings, [key]: value };
     setSettings(newSettings);
     await saveSettings(newSettings);
+    // Ovoz sozlamasi o'zgarganini sound moduliga bildirish
+    if (key === 'soundEnabled') {
+      setSoundEnabled(value);
+    }
   };
 
   if (!settings) {

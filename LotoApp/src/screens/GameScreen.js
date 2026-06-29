@@ -11,6 +11,7 @@ import { GameState } from '../engine/GameState';
 import { WinDetector } from '../engine/WinDetector';
 import { COLORS, GAME_MODES, WIN_TYPES, DEFAULT_SETTINGS } from '../utils/constants';
 import { saveGameResult, getSettings } from '../storage/StatsStorage';
+import { playDrawSound, playWinSound, setSoundEnabled } from '../utils/sound';
 
 /**
  * Asosiy o'yin ekrani.
@@ -22,15 +23,24 @@ export default function GameScreen({ route, navigation }) {
 
   const gameRef = useRef(null);
   const fastTimerRef = useRef(null);
-  const settingsRef = useRef(null);
+  const settingsRef = useRef(DEFAULT_SETTINGS);
 
   const [gameState, setGameState] = useState(null);
   const [lastWin, setLastWin] = useState(null);
   const [showWin, setShowWin] = useState(false);
 
+  // Sozlamalarni yuklash
+  useEffect(() => {
+    getSettings().then(s => {
+      settingsRef.current = s;
+      setSoundEnabled(s.soundEnabled !== false);
+    });
+  }, []);
+
   // O'yinni boshlash
   const startGame = useCallback(() => {
-    const gs = new GameState(mode);
+    const cardCount = settingsRef.current?.cardCount || 1;
+    const gs = new GameState(mode, cardCount);
     const state = gs.startNewGame();
     gameRef.current = gs;
     setGameState(state);
@@ -51,11 +61,19 @@ export default function GameScreen({ route, navigation }) {
 
     setGameState({ ...result });
 
+    // Ovoz effekti
+    playDrawSound();
+
     // Yutuq bo'lsa
     if (result.winResult && result.winResult.type !== WIN_TYPES.NONE) {
       setLastWin(result.winResult);
       setShowWin(true);
-      Vibration.vibrate(500);
+      // Vibratsiya sozlamasini tekshirish
+      if (settingsRef.current?.vibrationEnabled !== false) {
+        Vibration.vibrate(500);
+      }
+      // Yutuq ovozi
+      playWinSound();
       setTimeout(() => setShowWin(false), 2500);
     }
   }, []);
@@ -80,13 +98,6 @@ export default function GameScreen({ route, navigation }) {
       if (fastTimerRef.current) clearInterval(fastTimerRef.current);
     };
   }, [isFastMode, gameState?.isPlaying, gameState?.isGameOver, drawNumber]);
-
-  // Sozlamalarni yuklash va intervalni sozlash
-  useEffect(() => {
-    getSettings().then(s => {
-      settingsRef.current = s;
-    });
-  }, []);
 
   // Start on mount
   useEffect(() => {
@@ -178,12 +189,23 @@ export default function GameScreen({ route, navigation }) {
         markedCount={gameState.markedCount}
       />
 
-      {/* Kartochka */}
+      {/* Kartochkalar */}
       <ScrollView style={styles.cardScroll} contentContainerStyle={styles.cardScrollContent}>
-        <LotoCard
-          card={gameState.card}
-          currentNumber={gameState.currentNumber}
-        />
+        {gameState.cards && gameState.cards.length > 0 ? (
+          gameState.cards.map((card, idx) => (
+            <LotoCard
+              key={idx}
+              card={card}
+              currentNumber={gameState.currentNumber}
+              cardIndex={idx}
+            />
+          ))
+        ) : (
+          <LotoCard
+            card={gameState.card}
+            currentNumber={gameState.currentNumber}
+          />
+        )}
       </ScrollView>
 
       {/* Chiqarish tugmasi / O'yin tugaganda natija */}
@@ -191,26 +213,27 @@ export default function GameScreen({ route, navigation }) {
         {gameState.isGameOver ? (
           <View style={styles.gameOverBtns}>
             <DrawButton
-              onPress={() => {}}
-              disabled={true}
-              drawnCount={90}
+              onPress={() => {
+                const stats = gameRef.current.getStats();
+                navigation.navigate('Win', { stats, mode });
+              }}
+              disabled={false}
+              drawnCount={gameState.drawnCount}
               isFastMode={false}
+              customTitle="Natijalarni Ko'rish"
             />
             <View style={styles.gameOverActions}>
-              <DrawButton
-                onPress={() => {
-                  const stats = gameRef.current.getStats();
-                  navigation.navigate('Win', { stats, mode });
-                }}
-                disabled={false}
-                drawnCount={0}
-                isFastMode={false}
-              />
               <Text
                 style={styles.newGameBtn}
                 onPress={startGame}
               >
-                Yangi O'yin 🔄
+                🔄 Yangi O'yin
+              </Text>
+              <Text
+                style={styles.menuBtn}
+                onPress={() => navigation.navigate('MainMenu')}
+              >
+                🏠 Menyu
               </Text>
             </View>
           </View>
@@ -310,17 +333,24 @@ const styles = StyleSheet.create({
     borderTopColor: '#2a2a4a',
   },
   gameOverBtns: {
-    gap: 8,
+    gap: 12,
   },
   gameOverActions: {
     flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'center',
+    marginTop: 4,
   },
   newGameBtn: {
-    color: COLORS.BLUE_ACCENT,
+    color: COLORS.GREEN,
     fontSize: 16,
     fontWeight: 'bold',
+    padding: 12,
+  },
+  menuBtn: {
+    color: COLORS.GRAY,
+    fontSize: 16,
+    fontWeight: '600',
     padding: 12,
   },
 });

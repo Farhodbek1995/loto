@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import { COLORS } from '../utils/constants';
 
 /**
@@ -7,7 +7,7 @@ import { COLORS } from '../utils/constants';
  * Agar null bo'lsa - bo'sh katak.
  * Agar raqam bo'lsa - ochiq / yopilgan holatda.
  */
-export default function NumberCell({ cell, isCurrentNumber, onPress }) {
+export default function NumberCell({ cell, isCurrentNumber }) {
   // Bo'sh katak
   if (!cell) {
     return <View style={[styles.cell, styles.emptyCell]} />;
@@ -17,16 +17,13 @@ export default function NumberCell({ cell, isCurrentNumber, onPress }) {
   const isHighlighted = isCurrentNumber && !marked;
 
   return (
-    <TouchableOpacity
+    <View
       style={[
         styles.cell,
         styles.numberCell,
         marked && styles.markedCell,
         isHighlighted && styles.highlightedCell,
       ]}
-      onPress={onPress}
-      activeOpacity={0.7}
-      disabled={true}
     >
       <Text
         style={[
@@ -37,7 +34,7 @@ export default function NumberCell({ cell, isCurrentNumber, onPress }) {
       >
         {number}
       </Text>
-    </TouchableOpacity>
+    </View>
   );
 }
 

@@ -5,9 +5,24 @@ import { COLORS } from '../utils/constants';
 /**
  * Raqam chiqarish tugmasi.
  * O'yin holatiga qarab ko'rinishi o'zgaradi.
+ * @param {string} customTitle - Maxsus tugma matni (opsional)
  */
-export default function DrawButton({ onPress, disabled, drawnCount, isFastMode }) {
+export default function DrawButton({ onPress, disabled, drawnCount, isFastMode, customTitle }) {
   const allDrawn = drawnCount >= 90;
+
+  const getTitle = () => {
+    if (customTitle) return customTitle;
+    if (allDrawn) return 'O\'yin Yakunlandi';
+    if (isFastMode) return 'Tezkor Chiqarish';
+    return 'Raqam Chiqarish';
+  };
+
+  const getIcon = () => {
+    if (customTitle) return '📊';
+    if (allDrawn) return '🏁';
+    if (isFastMode) return '⚡';
+    return '🎯';
+  };
 
   return (
     <TouchableOpacity
@@ -20,18 +35,10 @@ export default function DrawButton({ onPress, disabled, drawnCount, isFastMode }
       activeOpacity={0.6}
     >
       <View style={styles.buttonContent}>
-        <Text style={styles.buttonIcon}>
-          {allDrawn ? '🏁' : isFastMode ? '⚡' : '🎯'}
-        </Text>
-        <Text style={styles.buttonText}>
-          {allDrawn
-            ? 'O\'yin Yakunlandi'
-            : isFastMode
-              ? 'Tezkor Chiqarish'
-              : 'Raqam Chiqarish'}
-        </Text>
+        <Text style={styles.buttonIcon}>{getIcon()}</Text>
+        <Text style={styles.buttonText}>{getTitle()}</Text>
       </View>
-      {!allDrawn && (
+      {!allDrawn && !customTitle && (
         <Text style={styles.buttonSubtext}>
           Qolgan: {90 - (drawnCount || 0)} ta raqam
         </Text>

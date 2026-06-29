@@ -100,7 +100,7 @@ LotoApp/
 ## 🛡️ Texnologiyalar
 
 - **React Native** 0.76 + **Expo** 52
-- **React Navigation** 7 (stack navigator)
+- **React Navigation** 6 (stack navigator)
 - **AsyncStorage** (statistika saqlash)
 - **EAS Build** (APK qurish)
 

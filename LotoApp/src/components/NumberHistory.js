@@ -15,7 +15,7 @@ export default function NumberHistory({ drawnNumbers, currentNumber }) {
     );
   }
 
-  // Oxirgi 6 ta raqam (eng yangisi o'ngda)
+  // Oxirgi 7 ta raqam (eng yangisi o'ngda)
   const recent = drawnNumbers.slice(-7);
 
   return (

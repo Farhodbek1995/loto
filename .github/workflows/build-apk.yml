@@ -20,6 +20,14 @@ jobs:
         with:
           node-version: 20
 
+      - name: 📦 Node modules keshlash
+        uses: actions/cache@v4
+        with:
+          path: LotoApp/node_modules
+          key: node-modules-${{ runner.os }}-${{ hashFiles('LotoApp/package-lock.json') }}
+          restore-keys: |
+            node-modules-${{ runner.os }}-
+
       - name: 📦 Bog'liqliklarni o'rnatish
         working-directory: LotoApp
         run: npm install --legacy-peer-deps
