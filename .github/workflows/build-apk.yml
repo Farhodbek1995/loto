@@ -15,20 +15,24 @@ jobs:
       - name: 📥 Repositoryni yuklab olish
         uses: actions/checkout@v4
 
-      - name: 🟢 Node.js 20 o'rnatish
+      - name: 🟢 Node.js 22 o'rnatish
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
 
       - name: 📦 Node modules keshlash
         uses: actions/cache@v4
         with:
           path: LotoApp/node_modules
-          key: node-modules-v2-${{ runner.os }}-${{ hashFiles('LotoApp/package-lock.json') }}
+          key: node-modules-v3-${{ runner.os }}-${{ hashFiles('LotoApp/package-lock.json') }}
 
       - name: 📦 Bog'liqliklarni o'rnatish
         working-directory: LotoApp
-        run: npm install --legacy-peer-deps
+        run: |
+          node --version
+          npm --version
+          npm install --legacy-peer-deps
+          ls node_modules/expo/package.json && echo "✅ expo installed" || echo "❌ expo NOT installed"
 
       - name: 🔧 EAS CLI o'rnatish
         run: npm install -g eas-cli@latest
@@ -38,11 +42,44 @@ jobs:
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
         run: |
-          eas build -p android --profile preview --non-interactive --wait
+          set -o pipefail
+          eas build -p android --profile preview --non-interactive --wait 2>&1 | tee build-output.txt
+          BUILD_EXIT=$?
+          echo ""
+          echo "=== Build exit code: $BUILD_EXIT ==="
+          if [ $BUILD_EXIT -ne 0 ]; then
+            echo "❌ EAS Build xatolik bilan yakunlandi!"
+            echo "=== Build log oxiri ==="
+            tail -100 build-output.txt
+            exit 1
+          fi
           echo ""
           echo "======================================"
           echo "✅ BUILD MUVAFFAQIYATLI YAKUNLANDI!"
           echo "======================================"
           echo ""
-          echo "📥 APK yuklab olish:"
-          echo "   https://expo.dev/accounts/katush.uz/projects/loto-app/builds"
+
+      - name: 📥 APK yuklab olish
+        working-directory: LotoApp
+        run: |
+          APK_URL=$(grep -oP 'https?://[^[:space:]]*\.apk' build-output.txt | tail -1)
+          if [ -z "$APK_URL" ]; then
+            echo "⚠️ APK URL topilmadi (regex mos kelmadi)."
+            echo "=== Build log oxiri ==="
+            tail -50 build-output.txt
+            echo "📌 EAS Dashboard: https://expo.dev/accounts/katush.uz/projects/loto-app/builds"
+            exit 1
+          fi
+          echo "✅ APK URL: $APK_URL"
+          curl -L -o loto-app.apk "$APK_URL"
+          ls -lah loto-app.apk
+          echo "✅ APK muvaffaqiyatli yuklandi!"
+
+      - name: 📱 APK artifact sifatida saqlash
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: loto-app-release
+          path: LotoApp/loto-app.apk
+          retention-days: 90
+          if-no-files-found: warn
