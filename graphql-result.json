@@ -1,0 +1,1 @@
+{"errors":[{"extensions":{"requestId":"78226c9a-2795-40b4-892d-1cd9eb1db9ad","code":"INTERNAL_SERVER_ERROR","errorCode":"VALIDATION_ERROR","errorType":"USER","isTransient":false},"message":"Invalid UUID appId","locations":[{"line":1,"column":9}],"path":["app","byId"]}],"data":null}

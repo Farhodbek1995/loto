@@ -1,0 +1,293 @@
+﻿2026-06-29T05:40:57.4416665Z Current runner version: '2.335.1'
+2026-06-29T05:40:57.4458058Z ##[group]Runner Image Provisioner
+2026-06-29T05:40:57.4459551Z Hosted Compute Agent
+2026-06-29T05:40:57.4460725Z Version: 20260611.554
+2026-06-29T05:40:57.4461813Z Commit: 5e0782fdc9014723d3be820dd114dd31555c2bd1
+2026-06-29T05:40:57.4463149Z Build Date: 2026-06-11T21:40:46Z
+2026-06-29T05:40:57.4464924Z Worker ID: {8007c201-a3dd-462e-844c-f6f6befaeab1}
+2026-06-29T05:40:57.4466367Z Azure Region: eastus
+2026-06-29T05:40:57.4467528Z ##[endgroup]
+2026-06-29T05:40:57.4470071Z ##[group]Operating System
+2026-06-29T05:40:57.4471217Z Ubuntu
+2026-06-29T05:40:57.4472147Z 24.04.4
+2026-06-29T05:40:57.4473134Z LTS
+2026-06-29T05:40:57.4474383Z ##[endgroup]
+2026-06-29T05:40:57.4475312Z ##[group]Runner Image
+2026-06-29T05:40:57.4476497Z Image: ubuntu-24.04
+2026-06-29T05:40:57.4477478Z Version: 20260622.220.1
+2026-06-29T05:40:57.4479888Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20260622.220/images/ubuntu/Ubuntu2404-Readme.md
+2026-06-29T05:40:57.4482732Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20260622.220
+2026-06-29T05:40:57.4484851Z ##[endgroup]
+2026-06-29T05:40:57.4487012Z ##[group]GITHUB_TOKEN Permissions
+2026-06-29T05:40:57.4490035Z Contents: read
+2026-06-29T05:40:57.4491053Z Metadata: read
+2026-06-29T05:40:57.4492202Z Packages: read
+2026-06-29T05:40:57.4493157Z ##[endgroup]
+2026-06-29T05:40:57.4496725Z Secret source: Actions
+2026-06-29T05:40:57.4498566Z Prepare workflow directory
+2026-06-29T05:40:57.5002762Z Prepare all required actions
+2026-06-29T05:40:57.5062224Z Getting action download info
+2026-06-29T05:40:57.6481178Z Download action repository 'actions/checkout@v4' (SHA:34e114876b0b11c390a56381ad16ebd13914f8d5)
+2026-06-29T05:40:57.7438019Z Download action repository 'actions/setup-node@v4' (SHA:49933ea5288caeca8642d1e84afbd3f7d6820020)
+2026-06-29T05:40:57.8308985Z Download action repository 'actions/upload-artifact@v4' (SHA:ea165f8d65b6e75b540449e92b4886f43607fa02)
+2026-06-29T05:40:58.1083392Z Complete job name: Build Android APK
+2026-06-29T05:40:58.1835935Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+2026-06-29T05:40:58.1844786Z ##[group]Run actions/checkout@v4
+2026-06-29T05:40:58.1845541Z with:
+2026-06-29T05:40:58.1845990Z   repository: Farhodbek1995/loto
+2026-06-29T05:40:58.1850280Z   token: ***
+2026-06-29T05:40:58.1850722Z   ssh-strict: true
+2026-06-29T05:40:58.1851166Z   ssh-user: git
+2026-06-29T05:40:58.1851630Z   persist-credentials: true
+2026-06-29T05:40:58.1852127Z   clean: true
+2026-06-29T05:40:58.1852577Z   sparse-checkout-cone-mode: true
+2026-06-29T05:40:58.1853100Z   fetch-depth: 1
+2026-06-29T05:40:58.1853728Z   fetch-tags: false
+2026-06-29T05:40:58.1854204Z   show-progress: true
+2026-06-29T05:40:58.1854657Z   lfs: false
+2026-06-29T05:40:58.1855137Z   submodules: false
+2026-06-29T05:40:58.1855593Z   set-safe-directory: true
+2026-06-29T05:40:58.1856349Z ##[endgroup]
+2026-06-29T05:40:58.2880834Z Syncing repository: Farhodbek1995/loto
+2026-06-29T05:40:58.2882608Z ##[group]Getting Git version info
+2026-06-29T05:40:58.2883290Z Working directory is '/home/runner/work/loto/loto'
+2026-06-29T05:40:58.2884654Z [command]/usr/bin/git version
+2026-06-29T05:40:58.3009731Z git version 2.54.0
+2026-06-29T05:40:58.3032314Z ##[endgroup]
+2026-06-29T05:40:58.3047798Z Temporarily overriding HOME='/home/runner/work/_temp/b0d54b4b-8215-4693-ab93-ea1aea0f582a' before making global git config changes
+2026-06-29T05:40:58.3052705Z Adding repository directory to the temporary git global config as a safe directory
+2026-06-29T05:40:58.3054563Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/loto/loto
+2026-06-29T05:40:58.3108071Z Deleting the contents of '/home/runner/work/loto/loto'
+2026-06-29T05:40:58.3111980Z ##[group]Initializing the repository
+2026-06-29T05:40:58.3117406Z [command]/usr/bin/git init /home/runner/work/loto/loto
+2026-06-29T05:40:58.3241438Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-06-29T05:40:58.3243017Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-06-29T05:40:58.3244305Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-06-29T05:40:58.3245063Z hint: call:
+2026-06-29T05:40:58.3245622Z hint:
+2026-06-29T05:40:58.3246546Z hint: 	git config --global init.defaultBranch <name>
+2026-06-29T05:40:58.3247656Z hint:
+2026-06-29T05:40:58.3248672Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-06-29T05:40:58.3250268Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-06-29T05:40:58.3251040Z hint:
+2026-06-29T05:40:58.3251480Z hint: 	git branch -m <name>
+2026-06-29T05:40:58.3252029Z hint:
+2026-06-29T05:40:58.3252812Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-06-29T05:40:58.3254723Z Initialized empty Git repository in /home/runner/work/loto/loto/.git/
+2026-06-29T05:40:58.3260799Z [command]/usr/bin/git remote add origin https://github.com/Farhodbek1995/loto
+2026-06-29T05:40:58.3310162Z ##[endgroup]
+2026-06-29T05:40:58.3311036Z ##[group]Disabling automatic garbage collection
+2026-06-29T05:40:58.3316138Z [command]/usr/bin/git config --local gc.auto 0
+2026-06-29T05:40:58.3348771Z ##[endgroup]
+2026-06-29T05:40:58.3349514Z ##[group]Setting up auth
+2026-06-29T05:40:58.3357047Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-06-29T05:40:58.3391483Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-06-29T05:40:58.3757190Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-06-29T05:40:58.3787797Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-06-29T05:40:58.4015644Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-06-29T05:40:58.4048053Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-06-29T05:40:58.4290718Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-06-29T05:40:58.4327368Z ##[endgroup]
+2026-06-29T05:40:58.4336501Z ##[group]Fetching the repository
+2026-06-29T05:40:58.4338990Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +02911913cf4b5554bc1387c79c160e404fa1ec68:refs/remotes/origin/master
+2026-06-29T05:40:58.6085325Z From https://github.com/Farhodbek1995/loto
+2026-06-29T05:40:58.6086374Z  * [new ref]         02911913cf4b5554bc1387c79c160e404fa1ec68 -> origin/master
+2026-06-29T05:40:58.6126116Z ##[endgroup]
+2026-06-29T05:40:58.6126992Z ##[group]Determining the checkout info
+2026-06-29T05:40:58.6128685Z ##[endgroup]
+2026-06-29T05:40:58.6133937Z [command]/usr/bin/git sparse-checkout disable
+2026-06-29T05:40:58.6178540Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-06-29T05:40:58.6205265Z ##[group]Checking out the ref
+2026-06-29T05:40:58.6209146Z [command]/usr/bin/git checkout --progress --force -B master refs/remotes/origin/master
+2026-06-29T05:40:58.6278224Z Reset branch 'master'
+2026-06-29T05:40:58.6281551Z branch 'master' set up to track 'origin/master'.
+2026-06-29T05:40:58.6287543Z ##[endgroup]
+2026-06-29T05:40:58.6326324Z [command]/usr/bin/git log -1 --format=%H
+2026-06-29T05:40:58.6349754Z 02911913cf4b5554bc1387c79c160e404fa1ec68
+2026-06-29T05:40:58.6628730Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+2026-06-29T05:40:58.6631467Z ##[group]Run actions/setup-node@v4
+2026-06-29T05:40:58.6631983Z with:
+2026-06-29T05:40:58.6632384Z   node-version: 18
+2026-06-29T05:40:58.6632833Z   always-auth: false
+2026-06-29T05:40:58.6633287Z   check-latest: false
+2026-06-29T05:40:58.6637795Z   token: ***
+2026-06-29T05:40:58.6638233Z ##[endgroup]
+2026-06-29T05:40:58.8169742Z Attempting to download 18...
+2026-06-29T05:40:58.8324204Z (node:2350) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-06-29T05:40:58.8326387Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-06-29T05:40:59.1428594Z Acquiring 18.20.8 - x64 from https://github.com/actions/node-versions/releases/download/18.20.8-14110393767/node-18.20.8-linux-x64.tar.gz
+2026-06-29T05:40:59.4619266Z Extracting ...
+2026-06-29T05:40:59.4740494Z [command]/usr/bin/tar xz --strip 1 --warning=no-unknown-keyword --overwrite -C /home/runner/work/_temp/f7d7b11c-433e-46ca-b9d9-c86a80847f04 -f /home/runner/work/_temp/8d4685de-2da2-4cbd-bfc5-bf7cbd71efab
+2026-06-29T05:41:00.4274688Z Adding to the cache ...
+2026-06-29T05:41:02.2634554Z ##[group]Environment details
+2026-06-29T05:41:02.4940110Z node: v18.20.8
+2026-06-29T05:41:02.4941812Z npm: 10.8.2
+2026-06-29T05:41:02.4942296Z yarn: 1.22.22
+2026-06-29T05:41:02.4943185Z ##[endgroup]
+2026-06-29T05:41:02.5134381Z ##[group]Run npx expo install --fix
+2026-06-29T05:41:02.5134788Z [36;1mnpx expo install --fix[0m
+2026-06-29T05:41:02.5337083Z shell: /usr/bin/bash -e {0}
+2026-06-29T05:41:02.5337410Z ##[endgroup]
+2026-06-29T05:41:03.2289083Z npm warn exec The following package was not found and will be installed: expo@56.0.12
+2026-06-29T05:41:16.2968070Z npm warn EBADENGINE Unsupported engine {
+2026-06-29T05:41:16.2969361Z npm warn EBADENGINE   package: '@expo/env@2.3.0',
+2026-06-29T05:41:16.2975407Z npm warn EBADENGINE   required: { node: '>=20.12.0' },
+2026-06-29T05:41:16.2976409Z npm warn EBADENGINE   current: { node: 'v18.20.8', npm: '10.8.2' }
+2026-06-29T05:41:16.2977113Z npm warn EBADENGINE }
+2026-06-29T05:41:16.2977703Z npm warn EBADENGINE Unsupported engine {
+2026-06-29T05:41:16.2978570Z npm warn EBADENGINE   package: 'expo-server@56.0.5',
+2026-06-29T05:41:16.2979470Z npm warn EBADENGINE   required: { node: '>=20.16.0' },
+2026-06-29T05:41:16.2980606Z npm warn EBADENGINE   current: { node: 'v18.20.8', npm: '10.8.2' }
+2026-06-29T05:41:16.2981462Z npm warn EBADENGINE }
+2026-06-29T05:41:16.2982123Z npm warn EBADENGINE Unsupported engine {
+2026-06-29T05:41:16.2983090Z npm warn EBADENGINE   package: '@react-native/dev-middleware@0.85.3',
+2026-06-29T05:41:16.2984713Z npm warn EBADENGINE   required: { node: '^20.19.4 || ^22.13.0 || ^24.3.0 || >= 25.0.0' },
+2026-06-29T05:41:16.2985960Z npm warn EBADENGINE   current: { node: 'v18.20.8', npm: '10.8.2' }
+2026-06-29T05:41:16.2986821Z npm warn EBADENGINE }
+2026-06-29T05:41:16.2987562Z npm warn EBADENGINE Unsupported engine {
+2026-06-29T05:41:16.2988348Z npm warn EBADENGINE   package: 'metro@0.84.4',
+2026-06-29T05:41:16.2989528Z npm warn EBADENGINE   required: { node: '^20.19.4 || ^22.13.0 || ^24.3.0 || >= 25.0.0' },
+2026-06-29T05:41:16.2990713Z npm warn EBADENGINE   current: { node: 'v18.20.8', npm: '10.8.2' }
+2026-06-29T05:41:16.2991485Z npm warn EBADENGINE }
+2026-06-29T05:41:16.2992078Z npm warn EBADENGINE Unsupported engine {
+2026-06-29T05:41:16.2992930Z npm warn EBADENGINE   package: 'metro-babel-transformer@0.84.4',
+2026-06-29T05:41:16.2994601Z npm warn EBADENGINE   required: { node: '^20.19.4 || ^22.13.0 || ^24.3.0 || >= 25.0.0' },
+2026-06-29T05:41:16.2995804Z npm warn EBADENGINE   current: { node: 'v18.20.8', npm: '10.8.2' }
+2026-06-29T05:41:16.2996583Z npm warn EBADENGINE }
+2026-06-29T05:41:16.2997306Z npm warn EBADENGINE Unsupported engine {
+2026-06-29T05:41:16.2998134Z npm warn EBADENGINE   package: 'metro-cache@0.84.4',
+2026-06-29T05:41:16.2999819Z npm warn EBADENGINE   required: { node: '^20.19.4 || ^22.13.0 || ^24.3.0 || >= 25.0.0' },
+2026-06-29T05:41:16.3001042Z npm warn EBADENGINE   current: { node: 'v18.20.8', npm: '10.8.2' }
+2026-06-29T05:41:16.3001895Z npm warn EBADENGINE }
+2026-06-29T05:41:16.3002525Z npm warn EBADENGINE Unsupported engine {
+2026-06-29T05:41:16.3003401Z npm warn EBADENGINE   package: 'metro-cache-key@0.84.4',
+2026-06-29T05:41:16.3004885Z npm warn EBADENGINE   required: { node: '^20.19.4 || ^22.13.0 || ^24.3.0 || >= 25.0.0' },
+2026-06-29T05:41:16.3006045Z npm warn EBADENGINE   current: { node: 'v18.20.8', npm: '10.8.2' }
+2026-06-29T05:41:16.3006806Z npm warn EBADENGINE }
+2026-06-29T05:41:16.3007440Z npm warn EBADENGINE Unsupported engine {
+2026-06-29T05:41:16.3008247Z npm warn EBADENGINE   package: 'metro-config@0.84.4',
+2026-06-29T05:41:16.3009346Z npm warn EBADENGINE   required: { node: '^20.19.4 || ^22.13.0 || ^24.3.0 || >= 25.0.0' },
+2026-06-29T05:41:16.3010506Z npm warn EBADENGINE   current: { node: 'v18.20.8', npm: '10.8.2' }
+2026-06-29T05:41:16.3011205Z npm warn EBADENGINE }
+2026-06-29T05:41:16.3011769Z npm warn EBADENGINE Unsupported engine {
+2026-06-29T05:41:16.3012467Z npm warn EBADENGINE   package: 'metro-core@0.84.4',
+2026-06-29T05:41:16.3013819Z npm warn EBADENGINE   required: { node: '^20.19.4 || ^22.13.0 || ^24.3.0 || >= 25.0.0' },
+2026-06-29T05:41:16.3014986Z npm warn EBADENGINE   current: { node: 'v18.20.8', npm: '10.8.2' }
+2026-06-29T05:41:16.3015764Z npm warn EBADENGINE }
+2026-06-29T05:41:16.3016720Z npm warn EBADENGINE Unsupported engine {
+2026-06-29T05:41:16.3017571Z npm warn EBADENGINE   package: 'metro-file-map@0.84.4',
+2026-06-29T05:41:16.3018687Z npm warn EBADENGINE   required: { node: '^20.19.4 || ^22.13.0 || ^24.3.0 || >= 25.0.0' },
+2026-06-29T05:41:16.3019825Z npm warn EBADENGINE   current: { node: 'v18.20.8', npm: '10.8.2' }
+2026-06-29T05:41:16.3020517Z npm warn EBADENGINE }
+2026-06-29T05:41:16.3021069Z npm warn EBADENGINE Unsupported engine {
+2026-06-29T05:41:16.3021986Z npm warn EBADENGINE   package: 'metro-minify-terser@0.84.4',
+2026-06-29T05:41:16.3023101Z npm warn EBADENGINE   required: { node: '^20.19.4 || ^22.13.0 || ^24.3.0 || >= 25.0.0' },
+2026-06-29T05:41:16.3024458Z npm warn EBADENGINE   current: { node: 'v18.20.8', npm: '10.8.2' }
+2026-06-29T05:41:16.3025218Z npm warn EBADENGINE }
+2026-06-29T05:41:16.3025789Z npm warn EBADENGINE Unsupported engine {
+2026-06-29T05:41:16.3026547Z npm warn EBADENGINE   package: 'metro-resolver@0.84.4',
+2026-06-29T05:41:16.3027611Z npm warn EBADENGINE   required: { node: '^20.19.4 || ^22.13.0 || ^24.3.0 || >= 25.0.0' },
+2026-06-29T05:41:16.3028682Z npm warn EBADENGINE   current: { node: 'v18.20.8', npm: '10.8.2' }
+2026-06-29T05:41:16.3029374Z npm warn EBADENGINE }
+2026-06-29T05:41:16.3029923Z npm warn EBADENGINE Unsupported engine {
+2026-06-29T05:41:16.3030660Z npm warn EBADENGINE   package: 'metro-runtime@0.84.4',
+2026-06-29T05:41:16.3031667Z npm warn EBADENGINE   required: { node: '^20.19.4 || ^22.13.0 || ^24.3.0 || >= 25.0.0' },
+2026-06-29T05:41:16.3032799Z npm warn EBADENGINE   current: { node: 'v18.20.8', npm: '10.8.2' }
+2026-06-29T05:41:16.3033812Z npm warn EBADENGINE }
+2026-06-29T05:41:16.3034438Z npm warn EBADENGINE Unsupported engine {
+2026-06-29T05:41:16.3035212Z npm warn EBADENGINE   package: 'metro-source-map@0.84.4',
+2026-06-29T05:41:16.3036338Z npm warn EBADENGINE   required: { node: '^20.19.4 || ^22.13.0 || ^24.3.0 || >= 25.0.0' },
+2026-06-29T05:41:16.3037458Z npm warn EBADENGINE   current: { node: 'v18.20.8', npm: '10.8.2' }
+2026-06-29T05:41:16.3038167Z npm warn EBADENGINE }
+2026-06-29T05:41:16.3038721Z npm warn EBADENGINE Unsupported engine {
+2026-06-29T05:41:16.3039505Z npm warn EBADENGINE   package: 'metro-symbolicate@0.84.4',
+2026-06-29T05:41:16.3040548Z npm warn EBADENGINE   required: { node: '^20.19.4 || ^22.13.0 || ^24.3.0 || >= 25.0.0' },
+2026-06-29T05:41:16.3041622Z npm warn EBADENGINE   current: { node: 'v18.20.8', npm: '10.8.2' }
+2026-06-29T05:41:16.3042224Z npm warn EBADENGINE }
+2026-06-29T05:41:16.3043057Z npm warn EBADENGINE Unsupported engine {
+2026-06-29T05:41:16.3044193Z npm warn EBADENGINE   package: 'metro-transform-plugins@0.84.4',
+2026-06-29T05:41:16.3045323Z npm warn EBADENGINE   required: { node: '^20.19.4 || ^22.13.0 || ^24.3.0 || >= 25.0.0' },
+2026-06-29T05:41:16.3046390Z npm warn EBADENGINE   current: { node: 'v18.20.8', npm: '10.8.2' }
+2026-06-29T05:41:16.3047106Z npm warn EBADENGINE }
+2026-06-29T05:41:16.3047673Z npm warn EBADENGINE Unsupported engine {
+2026-06-29T05:41:16.3048502Z npm warn EBADENGINE   package: 'metro-transform-worker@0.84.4',
+2026-06-29T05:41:16.3049590Z npm warn EBADENGINE   required: { node: '^20.19.4 || ^22.13.0 || ^24.3.0 || >= 25.0.0' },
+2026-06-29T05:41:16.3050656Z npm warn EBADENGINE   current: { node: 'v18.20.8', npm: '10.8.2' }
+2026-06-29T05:41:16.3051338Z npm warn EBADENGINE }
+2026-06-29T05:41:16.3051946Z npm warn EBADENGINE Unsupported engine {
+2026-06-29T05:41:16.3052857Z npm warn EBADENGINE   package: '@react-native/debugger-frontend@0.85.3',
+2026-06-29T05:41:16.3054306Z npm warn EBADENGINE   required: { node: '^20.19.4 || ^22.13.0 || ^24.3.0 || >= 25.0.0' },
+2026-06-29T05:41:16.3055417Z npm warn EBADENGINE   current: { node: 'v18.20.8', npm: '10.8.2' }
+2026-06-29T05:41:16.3056146Z npm warn EBADENGINE }
+2026-06-29T05:41:16.3056712Z npm warn EBADENGINE Unsupported engine {
+2026-06-29T05:41:16.3057594Z npm warn EBADENGINE   package: '@react-native/debugger-shell@0.85.3',
+2026-06-29T05:41:16.3058758Z npm warn EBADENGINE   required: { node: '^20.19.4 || ^22.13.0 || ^24.3.0 || >= 25.0.0' },
+2026-06-29T05:41:16.3060167Z npm warn EBADENGINE   current: { node: 'v18.20.8', npm: '10.8.2' }
+2026-06-29T05:41:16.3060959Z npm warn EBADENGINE }
+2026-06-29T05:41:16.3061559Z npm warn EBADENGINE Unsupported engine {
+2026-06-29T05:41:16.3062357Z npm warn EBADENGINE   package: 'fb-dotslash@0.5.8',
+2026-06-29T05:41:16.3063148Z npm warn EBADENGINE   required: { node: '>=20' },
+2026-06-29T05:41:16.3064126Z npm warn EBADENGINE   current: { node: 'v18.20.8', npm: '10.8.2' }
+2026-06-29T05:41:16.3064812Z npm warn EBADENGINE }
+2026-06-29T05:41:16.3065348Z npm warn EBADENGINE Unsupported engine {
+2026-06-29T05:41:16.3066289Z npm warn EBADENGINE   package: '@react-native/babel-plugin-codegen@0.85.3',
+2026-06-29T05:41:16.3067462Z npm warn EBADENGINE   required: { node: '^20.19.4 || ^22.13.0 || ^24.3.0 || >= 25.0.0' },
+2026-06-29T05:41:16.3068524Z npm warn EBADENGINE   current: { node: 'v18.20.8', npm: '10.8.2' }
+2026-06-29T05:41:16.3069196Z npm warn EBADENGINE }
+2026-06-29T05:41:16.3069733Z npm warn EBADENGINE Unsupported engine {
+2026-06-29T05:41:16.3070533Z npm warn EBADENGINE   package: '@react-native/codegen@0.85.3',
+2026-06-29T05:41:16.3071724Z npm warn EBADENGINE   required: { node: '^20.19.4 || ^22.13.0 || ^24.3.0 || >= 25.0.0' },
+2026-06-29T05:41:16.3072909Z npm warn EBADENGINE   current: { node: 'v18.20.8', npm: '10.8.2' }
+2026-06-29T05:41:16.3073855Z npm warn EBADENGINE }
+2026-06-29T05:41:16.3074380Z npm warn EBADENGINE Unsupported engine {
+2026-06-29T05:41:16.3075027Z npm warn EBADENGINE   package: 'ob1@0.84.4',
+2026-06-29T05:41:16.3075904Z npm warn EBADENGINE   required: { node: '^20.19.4 || ^22.13.0 || ^24.3.0 || >= 25.0.0' },
+2026-06-29T05:41:16.3076900Z npm warn EBADENGINE   current: { node: 'v18.20.8', npm: '10.8.2' }
+2026-06-29T05:41:16.3077548Z npm warn EBADENGINE }
+2026-06-29T05:41:16.3078083Z npm warn EBADENGINE Unsupported engine {
+2026-06-29T05:41:16.3078742Z npm warn EBADENGINE   package: 'lru-cache@11.5.1',
+2026-06-29T05:41:16.3079469Z npm warn EBADENGINE   required: { node: '20 || >=22' },
+2026-06-29T05:41:16.3080293Z npm warn EBADENGINE   current: { node: 'v18.20.8', npm: '10.8.2' }
+2026-06-29T05:41:16.3080911Z npm warn EBADENGINE }
+2026-06-29T05:41:17.5955425Z npm warn deprecated rimraf@3.0.2: Rimraf versions prior to v4 are no longer supported
+2026-06-29T05:41:17.6088022Z npm warn deprecated inflight@1.0.6: This module is not supported, and leaks memory. Do not use it. Check out lru-cache if you want a good and tested way to coalesce async requests by a key value, which is much more comprehensive and powerful.
+2026-06-29T05:41:19.2171430Z npm warn deprecated uuid@7.0.3: uuid@10 and below is no longer supported.  For ESM codebases, update to uuid@latest.  For CommonJS codebases, use uuid@11 (but be aware this version will likely be deprecated in 2028).
+2026-06-29T05:41:19.9155906Z npm warn deprecated glob@7.2.3: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
+2026-06-29T05:41:20.0245999Z npm warn deprecated glob@7.2.3: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
+2026-06-29T05:41:20.2227575Z npm warn deprecated glob@7.2.3: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
+2026-06-29T05:41:29.1928193Z Node.js (v18.20.8) is outdated and unsupported. Please update to a newer Node.js LTS version (required: >=20.19.4)
+2026-06-29T05:41:29.1929568Z Go to: https://nodejs.org/en/download
+2026-06-29T05:41:29.1929983Z 
+2026-06-29T05:41:29.3221414Z ConfigError: Cannot determine the project's Expo SDK version because the module `expo` is not installed. Install it with `npm install expo` and try again.
+2026-06-29T05:41:29.3618263Z ##[error]Process completed with exit code 1.
+2026-06-29T05:41:29.3727792Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+2026-06-29T05:41:29.3729103Z ##[group]Run actions/upload-artifact@v4
+2026-06-29T05:41:29.3729373Z with:
+2026-06-29T05:41:29.3729573Z   name: loto-app-release
+2026-06-29T05:41:29.3729805Z   path: LotoApp/*.apk
+2026-06-29T05:41:29.3730024Z   retention-days: 90
+2026-06-29T05:41:29.3730247Z   if-no-files-found: warn
+2026-06-29T05:41:29.3730471Z   compression-level: 6
+2026-06-29T05:41:29.3730686Z   overwrite: false
+2026-06-29T05:41:29.3730914Z   include-hidden-files: false
+2026-06-29T05:41:29.3731155Z ##[endgroup]
+2026-06-29T05:41:29.5304668Z (node:2411) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-06-29T05:41:29.5306194Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-06-29T05:41:29.5368793Z ##[warning]No files were found with the provided path: LotoApp/*.apk. No artifacts will be uploaded.
+2026-06-29T05:41:29.5549282Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+2026-06-29T05:41:29.5550554Z Post job cleanup.
+2026-06-29T05:41:29.6371927Z [command]/usr/bin/git version
+2026-06-29T05:41:29.6408209Z git version 2.54.0
+2026-06-29T05:41:29.6447274Z Temporarily overriding HOME='/home/runner/work/_temp/e24f8e7f-735d-42d2-b102-343582394e5a' before making global git config changes
+2026-06-29T05:41:29.6448944Z Adding repository directory to the temporary git global config as a safe directory
+2026-06-29T05:41:29.6453169Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/loto/loto
+2026-06-29T05:41:29.6488384Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-06-29T05:41:29.6522262Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-06-29T05:41:29.6773452Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-06-29T05:41:29.6818812Z http.https://github.com/.extraheader
+2026-06-29T05:41:29.6821554Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+2026-06-29T05:41:29.6842998Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-06-29T05:41:29.7060618Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-06-29T05:41:29.7092378Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-06-29T05:41:29.7437729Z Cleaning up orphan processes
+2026-06-29T05:41:29.7722311Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-node@v4, actions/upload-artifact@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
