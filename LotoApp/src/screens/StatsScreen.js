@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { View, Text, ScrollView, StyleSheet, RefreshControl } from 'react-native';
 import Header from '../components/Header';
 import { COLORS } from '../utils/constants';
@@ -11,20 +11,29 @@ import { getStats } from '../storage/StatsStorage';
 export default function StatsScreen({ navigation }) {
   const [stats, setStats] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
+  const mountedRef = useRef(true);
 
   const loadStats = useCallback(async () => {
     const data = await getStats();
-    setStats(data);
+    if (mountedRef.current) {
+      setStats(data);
+    }
   }, []);
 
   useEffect(() => {
+    mountedRef.current = true;
     loadStats();
+    return () => {
+      mountedRef.current = false;
+    };
   }, [loadStats]);
 
   const onRefresh = async () => {
     setRefreshing(true);
     await loadStats();
-    setRefreshing(false);
+    if (mountedRef.current) {
+      setRefreshing(false);
+    }
   };
 
   if (!stats) {

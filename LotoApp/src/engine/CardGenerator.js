@@ -51,8 +51,11 @@ export function generateCard() {
   // Har bir ustun uchun jami nechta raqam kerakligini hisoblash
   const colCounts = Array(COLS).fill(0);
   for (let row = 0; row < ROWS; row++) {
+    if (!rowCols[row]) continue;
     for (const col of rowCols[row]) {
-      colCounts[col]++;
+      if (col >= 0 && col < COLS) {
+        colCounts[col]++;
+      }
     }
   }
 
@@ -60,18 +63,29 @@ export function generateCard() {
   const colNumbers = [];
   for (let col = 0; col < COLS; col++) {
     const range = COLUMN_RANGES[col];
-    colNumbers[col] = getRandomNumbersInRange(range.min, range.max, colCounts[col]);
+    // Xavfsizlik: colCounts 0 bo'lsa bo'sh massiv
+    const count = Math.max(0, colCounts[col] || 0);
+    colNumbers[col] = count > 0
+      ? getRandomNumbersInRange(range.min, range.max, count)
+      : [];
   }
 
   // Har bir qatorga raqamlarni joylashtirish
   const colIndex = Array(COLS).fill(0);
   for (let row = 0; row < ROWS; row++) {
+    if (!rowCols[row]) continue;
     for (const col of rowCols[row]) {
-      card[row][col] = {
-        number: colNumbers[col][colIndex[col]],
-        marked: false,
-      };
-      colIndex[col]++;
+      if (col < 0 || col >= COLS) continue;
+      const numsForCol = colNumbers[col];
+      const idx = colIndex[col];
+      // Xavfsizlik: indeks chegaradan chiqmasligini tekshirish
+      if (numsForCol && idx < numsForCol.length) {
+        card[row][col] = {
+          number: numsForCol[idx],
+          marked: false,
+        };
+        colIndex[col]++;
+      }
     }
   }
 

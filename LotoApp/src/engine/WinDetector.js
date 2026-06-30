@@ -10,11 +10,18 @@ export class WinDetector {
    * @returns {{ type: string, row: number | null }}
    */
   static checkWin(card) {
+    // Null/xavfsizlik tekshiruvi - noto'g'ri ma'lumot kelsa crash bo'lmasin
+    if (!card || !Array.isArray(card) || card.length === 0) {
+      return { type: WIN_TYPES.NONE, row: null };
+    }
+
     let completedRows = 0;
     let lastCompletedRow = null;
 
     // Har bir qatorni tekshirish
-    for (let row = 0; row < ROWS; row++) {
+    const rowsToCheck = Math.min(ROWS, card.length);
+    for (let row = 0; row < rowsToCheck; row++) {
+      if (!card[row] || !Array.isArray(card[row])) continue;
       const markedInRow = card[row].filter(cell => cell && cell.marked).length;
       if (markedInRow >= NUMBERS_PER_ROW) {
         completedRows++;
@@ -41,7 +48,18 @@ export class WinDetector {
    * @returns {{ type: string, row: number | null }}
    */
   static checkWinAfterMark(card, lastMarkedRow) {
-    const markedInRow = card[lastMarkedRow].filter(cell => cell && cell.marked).length;
+    if (!card || !Array.isArray(card)) {
+      return { type: WIN_TYPES.NONE, row: null };
+    }
+    if (lastMarkedRow == null || lastMarkedRow < 0 || lastMarkedRow >= card.length) {
+      return { type: WIN_TYPES.NONE, row: null };
+    }
+    const rowData = card[lastMarkedRow];
+    if (!rowData || !Array.isArray(rowData)) {
+      return { type: WIN_TYPES.NONE, row: null };
+    }
+
+    const markedInRow = rowData.filter(cell => cell && cell.marked).length;
 
     if (markedInRow < NUMBERS_PER_ROW) {
       return { type: WIN_TYPES.NONE, row: null };
@@ -73,9 +91,9 @@ export class WinDetector {
   static getWinDescription(winType, row) {
     switch (winType) {
       case WIN_TYPES.ROW:
-        return `${row + 1}-qatordagi barcha raqamlar yopildi!`;
+        return `${(row ?? 0) + 1}-qatordagi barcha raqamlar yopildi!`;
       case WIN_TYPES.TWO_ROWS:
-        return `${row + 1}-qatordagi barcha raqamlar yopildi! Kartochkaning 2/3 qismi to'ldi!`;
+        return `${(row ?? 0) + 1}-qatordagi barcha raqamlar yopildi! Kartochkaning 2/3 qismi to'ldi!`;
       case WIN_TYPES.FULL_HOUSE:
         return "Barcha 15 ta raqam yopildi! Siz ASOSIY yutuqni qo'lga kiritdingiz!";
       default:

@@ -4,6 +4,24 @@ import { WinDetector } from './WinDetector';
 import { WIN_TYPES, GAME_MODES, MAX_NUMBER } from '../utils/constants';
 
 /**
+ * Kartochkani chuqur klonlash - React state uchun xavfsiz.
+ * Obyekt referenslarini uzib, React qayta render qilishini ta'minlaydi.
+ */
+function deepCloneCard(card) {
+  if (!card) return null;
+  return card.map(row =>
+    row.map(cell =>
+      cell ? { number: cell.number, marked: cell.marked } : null
+    )
+  );
+}
+
+function deepCloneCards(cards) {
+  if (!cards || !Array.isArray(cards)) return [];
+  return cards.map(card => deepCloneCard(card));
+}
+
+/**
  * Asosiy o'yin holatini boshqaruvchi sinf.
  * Ko'p kartochkali rejimni qo'llab-quvvatlaydi (1-4 ta).
  */
@@ -47,6 +65,10 @@ export class GameState {
       return { ...this.getState(), error: 'O\'yin yakunlangan yoki boshlanmagan' };
     }
 
+    if (!this.drawer) {
+      return { ...this.getState(), error: 'O\'yin hali boshlanmagan' };
+    }
+
     const result = this.drawer.draw();
     if (!result) {
       this.isGameOver = true;
@@ -59,7 +81,9 @@ export class GameState {
     // Barcha kartochkalarda shu raqamni belgilash
     let markedRow = -1;
     for (const card of this.cards) {
+      if (!card || !Array.isArray(card)) continue;
       for (let row = 0; row < card.length; row++) {
+        if (!card[row] || !Array.isArray(card[row])) continue;
         for (let col = 0; col < card[row].length; col++) {
           const cell = card[row][col];
           if (cell && cell.number === result.number) {
@@ -73,6 +97,7 @@ export class GameState {
     // Barcha kartochkalarda yutuqni tekshirish (eng yuqori yutuqni olamiz)
     let bestWinResult = { type: WIN_TYPES.NONE, row: null };
     for (const card of this.cards) {
+      if (!card || !Array.isArray(card)) continue;
       const winResult = WinDetector.checkWin(card);
       if (winResult.type === WIN_TYPES.FULL_HOUSE) {
         bestWinResult = winResult;
@@ -110,21 +135,24 @@ export class GameState {
   }
 
   /**
-   * Joriy o'yin holatini olish
+   * Joriy o'yin holatini olish.
+   * MUHIM: Kartochkalar chuqur klonlanadi, chunki React state
+   * mutable obyektlar bilan noto'g'ri ishlaydi (re-render qilmaslik,
+   * render vaqtida crash).
    */
   getState() {
     const totalMarked = this.cards.reduce((sum, card) => sum + countMarked(card), 0);
     const drawnLength = this.drawer ? this.drawer.getDrawnNumbers().length : 0;
     return {
-      cards: this.cards,
-      card: this.cards.length > 0 ? this.cards[0] : null,
+      cards: deepCloneCards(this.cards),
+      card: this.cards.length > 0 ? deepCloneCard(this.cards[0]) : null,
       cardCount: this.cardCount,
       currentNumber: this.currentNumber,
       drawnNumbers: this.drawer ? this.drawer.getDrawnNumbers() : [],
       drawnCount: drawnLength,
       remainingCount: this.drawer ? this.drawer.getRemainingCount() : MAX_NUMBER,
       progress: drawnLength / MAX_NUMBER,
-      winHistory: this.winHistory,
+      winHistory: [...this.winHistory],
       isGameOver: this.isGameOver,
       isPlaying: this.isPlaying,
       gameMode: this.gameMode,
@@ -140,7 +168,7 @@ export class GameState {
     return {
       drawnCount: this.drawer ? this.drawer.getDrawnNumbers().length : 0,
       markedCount: totalMarked,
-      winHistory: this.winHistory,
+      winHistory: [...this.winHistory],
       hasFullHouse: this.winHistory.some(w => w.type === WIN_TYPES.FULL_HOUSE),
       totalNumbers: MAX_NUMBER,
       cardCount: this.cardCount,

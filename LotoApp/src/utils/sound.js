@@ -4,20 +4,13 @@
  * expo-av hozircha o'rnatilmagan — ovoz funksiyalari no-op.
  * Keyinchalik `npm install expo-av` qilinsa, ushbu modul avtomatik
  * tarzda haqiqiy Audio API dan foydalanadi.
+ *
+ * MUHIM: Hermes release buildlarida require('expo-av') crashga
+ * sabab bo'ladi, shuning uchun hech qachon dynamic require ishlatilmaydi.
+ * Ovoz qo'shish kerak bo'lsa, static import ishlatiladi.
  */
 
 let soundEnabled = true;
-
-let _Audio = null;
-function getAudio() {
-  if (_Audio !== null) return _Audio;
-  try {
-    _Audio = require('expo-av').Audio;
-  } catch (_e) {
-    _Audio = false;
-  }
-  return _Audio || null;
-}
 
 export function setSoundEnabled(enabled) {
   soundEnabled = enabled;
@@ -28,21 +21,21 @@ export function isSoundEnabled() {
 }
 
 export async function playDrawSound() {
-  const Audio = getAudio();
-  if (!Audio || !soundEnabled) return;
-  // kelajakda: Audio.Sound.createAsync(...)
+  // STUB: Ovoz hozircha o'chirilgan.
+  // Faollashtirish uchun:
+  //   1. npm install expo-av
+  //   2. import { Audio } from 'expo-av';
+  //   3. Audio.Sound.createAsync(...) bilan ovoz yuklash
 }
 
 export async function playWinSound() {
-  const Audio = getAudio();
-  if (!Audio || !soundEnabled) return;
+  // STUB
 }
 
 export async function playClickSound() {
-  const Audio = getAudio();
-  if (!Audio || !soundEnabled) return;
+  // STUB
 }
 
 export async function unloadAllSounds() {
-  // stub — hech narsa qilmaydi
+  // STUB
 }

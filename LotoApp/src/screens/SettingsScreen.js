@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View, Text, Switch, TouchableOpacity, StyleSheet, ScrollView,
 } from 'react-native';
@@ -12,13 +12,21 @@ import { setSoundEnabled } from '../utils/sound';
  */
 export default function SettingsScreen({ navigation }) {
   const [settings, setSettings] = useState(null);
+  const mountedRef = useRef(true);
 
   useEffect(() => {
+    mountedRef.current = true;
+    let cancelled = false;
     getSettings().then(s => {
+      if (cancelled || !mountedRef.current) return;
       setSettings(s);
       // Ovoz sozlamasini sound moduliga ham uzatish
       setSoundEnabled(s.soundEnabled !== false);
     });
+    return () => {
+      cancelled = true;
+      mountedRef.current = false;
+    };
   }, []);
 
   const updateSetting = async (key, value) => {

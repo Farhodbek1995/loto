@@ -16,6 +16,13 @@ import { playDrawSound, playWinSound, setSoundEnabled } from '../utils/sound';
 /**
  * Asosiy o'yin ekrani.
  * O'yin jarayonini boshqaradi.
+ *
+ * MUHIM tuzatishlar:
+ * - Barcha setTimeout/setInterval ID'lari ref da saqlanadi va
+ *   komponent unmount bo'lganda tozalanadi (memory leak + crash)
+ * - mounted ref orqali unmount dan keyin setState chaqirilmaydi
+ * - Fast-mode interval faqat bir marta yaratiladi (race condition fix)
+ * - gameRef.current o'rniga callback ref pattern ishlatilgan
  */
 export default function GameScreen({ route, navigation }) {
   const { mode } = route.params || { mode: GAME_MODES.SIMPLE };
@@ -23,105 +30,186 @@ export default function GameScreen({ route, navigation }) {
 
   const gameRef = useRef(null);
   const fastTimerRef = useRef(null);
+  const winTimerRef = useRef(null);
+  const navTimerRef = useRef(null);
   const settingsRef = useRef(DEFAULT_SETTINGS);
+  const mountedRef = useRef(true);
+  const isFastActiveRef = useRef(false);
 
   const [gameState, setGameState] = useState(null);
   const [lastWin, setLastWin] = useState(null);
   const [showWin, setShowWin] = useState(false);
 
+  /**
+   * Barcha timerlarni tozalash (xavfsiz)
+   */
+  const clearAllTimers = useCallback(() => {
+    if (fastTimerRef.current) {
+      clearInterval(fastTimerRef.current);
+      fastTimerRef.current = null;
+      isFastActiveRef.current = false;
+    }
+    if (winTimerRef.current) {
+      clearTimeout(winTimerRef.current);
+      winTimerRef.current = null;
+    }
+    if (navTimerRef.current) {
+      clearTimeout(navTimerRef.current);
+      navTimerRef.current = null;
+    }
+  }, []);
+
+  // Komponent unmount bo'lganda barcha timerlarni tozalash
+  useEffect(() => {
+    mountedRef.current = true;
+    return () => {
+      mountedRef.current = false;
+      clearAllTimers();
+    };
+  }, [clearAllTimers]);
+
   // Sozlamalarni yuklash
   useEffect(() => {
+    let cancelled = false;
     getSettings().then(s => {
+      if (cancelled || !mountedRef.current) return;
       settingsRef.current = s;
       setSoundEnabled(s.soundEnabled !== false);
     });
+    return () => { cancelled = true; };
   }, []);
 
   // O'yinni boshlash
   const startGame = useCallback(() => {
+    // Avvalgi o'yin timerlarini tozalash
+    clearAllTimers();
+
     const cardCount = settingsRef.current?.cardCount || 1;
     const gs = new GameState(mode, cardCount);
     const state = gs.startNewGame();
     gameRef.current = gs;
-    setGameState(state);
-    setLastWin(null);
-    setShowWin(false);
-  }, [mode]);
+    if (mountedRef.current) {
+      setGameState(state);
+      setLastWin(null);
+      setShowWin(false);
+    }
+  }, [mode, clearAllTimers]);
 
   // Raqam chiqarish
   const drawNumber = useCallback(() => {
-    if (!gameRef.current) return;
+    const game = gameRef.current;
+    if (!game) return;
 
-    const result = gameRef.current.drawNumber();
+    const result = game.drawNumber();
 
     if (!result || result.error) {
-      if (result?.error) Alert.alert('Diqqat', result.error);
+      if (result?.error && mountedRef.current) {
+        Alert.alert('Diqqat', result.error);
+      }
       return;
     }
 
+    if (!mountedRef.current) return;
+
     setGameState({ ...result });
 
-    // Ovoz effekti
-    playDrawSound();
+    // Ovoz effekti (async, xavfsiz)
+    try { playDrawSound(); } catch (_) { /* ignore */ }
 
     // Yutuq bo'lsa
     if (result.winResult && result.winResult.type !== WIN_TYPES.NONE) {
       setLastWin(result.winResult);
       setShowWin(true);
+
       // Vibratsiya sozlamasini tekshirish
       if (settingsRef.current?.vibrationEnabled !== false) {
-        Vibration.vibrate(500);
+        try { Vibration.vibrate(500); } catch (_) { /* ignore */ }
       }
       // Yutuq ovozi
-      playWinSound();
-      setTimeout(() => setShowWin(false), 2500);
+      try { playWinSound(); } catch (_) { /* ignore */ }
+
+      // Win banner timer - ref da saqlanadi
+      if (winTimerRef.current) clearTimeout(winTimerRef.current);
+      winTimerRef.current = setTimeout(() => {
+        winTimerRef.current = null;
+        if (mountedRef.current) setShowWin(false);
+      }, 2500);
     }
   }, []);
 
   // Tezkor rejim uchun avtomatik chiqarish
   useEffect(() => {
-    if (!isFastMode || !gameRef.current) return;
-    if (!gameRef.current.isPlaying || gameRef.current.isGameOver) return;
+    // Faqat tezkor rejimda va o'yin faol bo'lganda
+    if (!isFastMode) {
+      isFastActiveRef.current = false;
+      return;
+    }
 
+    // Agar o'yin hali boshlanmagan yoki tugagan bo'lsa
+    if (!gameRef.current) return;
+    if (!gameRef.current.isPlaying || gameRef.current.isGameOver) {
+      return;
+    }
+
+    // Agar interval allaqachon ishlamoqda bo'lsa, qayta yaratmaymiz
+    if (isFastActiveRef.current) return;
+
+    isFastActiveRef.current = true;
     const interval = settingsRef.current?.fastDrawInterval || DEFAULT_SETTINGS.fastDrawInterval;
 
     fastTimerRef.current = setInterval(() => {
-      // O'yin tugagan bo'lsa intervalni to'xtatish
-      if (gameRef.current?.isGameOver) {
-        if (fastTimerRef.current) clearInterval(fastTimerRef.current);
+      if (!mountedRef.current) {
+        clearAllTimers();
+        return;
+      }
+      const game = gameRef.current;
+      if (!game || game.isGameOver) {
+        if (fastTimerRef.current) {
+          clearInterval(fastTimerRef.current);
+          fastTimerRef.current = null;
+          isFastActiveRef.current = false;
+        }
         return;
       }
       drawNumber();
     }, interval);
 
     return () => {
-      if (fastTimerRef.current) clearInterval(fastTimerRef.current);
+      if (fastTimerRef.current) {
+        clearInterval(fastTimerRef.current);
+        fastTimerRef.current = null;
+        isFastActiveRef.current = false;
+      }
     };
-  }, [isFastMode, gameState?.isPlaying, gameState?.isGameOver, drawNumber]);
+    // faqat isFastMode o'zgarganda qayta yaratamiz
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isFastMode]);
 
   // Start on mount
   useEffect(() => {
     startGame();
-    return () => {
-      if (fastTimerRef.current) clearInterval(fastTimerRef.current);
-    };
-  }, [startGame]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // O'yin tugaganda natijani saqlash
   useEffect(() => {
-    if (gameState?.isGameOver && gameRef.current) {
-      const stats = gameRef.current.getStats();
-      saveGameResult(stats);
-      // Tezkor rejimda avtomatik natija ekraniga o'tish
-      if (isFastMode && stats.hasFullHouse) {
-        setTimeout(() => {
-          navigation.navigate('Win', {
-            stats,
-            mode,
-          });
-        }, 1500);
-      }
+    if (!gameState?.isGameOver || !gameRef.current) return;
+    if (!mountedRef.current) return;
+
+    const stats = gameRef.current.getStats();
+    saveGameResult(stats);
+
+    // Tezkor rejimda avtomatik natija ekraniga o'tish
+    if (isFastMode && stats.hasFullHouse) {
+      if (navTimerRef.current) clearTimeout(navTimerRef.current);
+      navTimerRef.current = setTimeout(() => {
+        navTimerRef.current = null;
+        if (mountedRef.current) {
+          navigation.navigate('Win', { stats, mode });
+        }
+      }, 1500);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [gameState?.isGameOver]);
 
   if (!gameState) {
@@ -138,22 +226,20 @@ export default function GameScreen({ route, navigation }) {
         title={`LOTO ${isFastMode ? '⚡' : '🎯'}`}
         showBack
         onBack={() => {
-          if (fastTimerRef.current) clearInterval(fastTimerRef.current);
+          clearAllTimers();
           navigation.goBack();
         }}
       />
 
       {/* Chiqqan raqam ko'rinishi */}
-      {gameState.currentNumber && (
+      {gameState.currentNumber ? (
         <View style={styles.drawnSection}>
           <View style={styles.drawnBall}>
             <Text style={styles.drawnNumber}>{gameState.currentNumber}</Text>
           </View>
           <Text style={styles.drawnLabel}>Chiqdi!</Text>
         </View>
-      )}
-
-      {!gameState.currentNumber && (
+      ) : (
         <View style={styles.drawnSection}>
           <View style={[styles.drawnBall, styles.drawnBallEmpty]}>
             <Text style={styles.drawnNumberEmpty}>?</Text>
@@ -214,8 +300,11 @@ export default function GameScreen({ route, navigation }) {
           <View style={styles.gameOverBtns}>
             <DrawButton
               onPress={() => {
-                const stats = gameRef.current.getStats();
-                navigation.navigate('Win', { stats, mode });
+                const g = gameRef.current;
+                if (g) {
+                  const stats = g.getStats();
+                  navigation.navigate('Win', { stats, mode });
+                }
               }}
               disabled={false}
               drawnCount={gameState.drawnCount}
@@ -231,7 +320,10 @@ export default function GameScreen({ route, navigation }) {
               </Text>
               <Text
                 style={styles.menuBtn}
-                onPress={() => navigation.navigate('MainMenu')}
+                onPress={() => {
+                  clearAllTimers();
+                  navigation.navigate('MainMenu');
+                }}
               >
                 🏠 Menyu
               </Text>
