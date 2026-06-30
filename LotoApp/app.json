@@ -23,7 +23,7 @@
         "backgroundColor": "#1A1A2E"
       },
       "package": "com.lotoapp.game",
-      "versionCode": 9
+      "versionCode": 10
     },
     "extra": {
       "eas": {
