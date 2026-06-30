@@ -17,7 +17,7 @@ export default function MainMenuScreen({ navigation }) {
         <Text style={styles.title}>LOTO</Text>
         <Text style={styles.subtitle}>ONLINE</Text>
         <View style={styles.divider} />
-        <Text style={styles.desc}>Klassik loto o'yini{'\n'}1 dan 90 gacha</Text>
+        <Text style={styles.desc}>Klassik loto o'yini{'\n'}3 ta karta • Bonuslar • Ovoz</Text>
       </View>
 
       {/* O'yin tugmalari */}
@@ -30,7 +30,7 @@ export default function MainMenuScreen({ navigation }) {
           <Text style={styles.btnIcon}>🎯</Text>
           <View style={styles.btnTextContainer}>
             <Text style={styles.btnTitle}>Oddiy O'yin</Text>
-            <Text style={styles.btnDesc}>Raqamlarni qo'lda chiqaring</Text>
+            <Text style={styles.btnDesc}>3 ta karta bilan o'ynang</Text>
           </View>
         </TouchableOpacity>
 
@@ -42,7 +42,7 @@ export default function MainMenuScreen({ navigation }) {
           <Text style={styles.btnIcon}>⚡</Text>
           <View style={styles.btnTextContainer}>
             <Text style={styles.btnTitle}>Tezkor O'yin</Text>
-            <Text style={styles.btnDesc}>Avtomatik har 5 soniyada</Text>
+            <Text style={styles.btnDesc}>3 ta karta • Avtomatik raqam</Text>
           </View>
         </TouchableOpacity>
       </View>

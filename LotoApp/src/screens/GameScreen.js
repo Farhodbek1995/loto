@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import {
-  View, Text, ScrollView, StyleSheet, Alert, Vibration,
+  View, Text, ScrollView, StyleSheet, Alert, Vibration, TouchableOpacity,
 } from 'react-native';
 import LotoCard from '../components/LotoCard';
 import DrawButton from '../components/DrawButton';
@@ -9,9 +9,9 @@ import ProgressBar from '../components/ProgressBar';
 import Header from '../components/Header';
 import { GameState } from '../engine/GameState';
 import { WinDetector } from '../engine/WinDetector';
-import { COLORS, GAME_MODES, WIN_TYPES, DEFAULT_SETTINGS } from '../utils/constants';
+import { COLORS, GAME_MODES, WIN_TYPES, DEFAULT_SETTINGS, BONUS_TYPES, MAX_BONUS_USES } from '../utils/constants';
 import { saveGameResult, getSettings } from '../storage/StatsStorage';
-import { playDrawSound, playWinSound, setSoundEnabled } from '../utils/sound';
+import { playDrawSound, playWinSound, playClickSound, setSoundEnabled } from '../utils/sound';
 
 /**
  * Asosiy o'yin ekrani.
@@ -39,6 +39,12 @@ export default function GameScreen({ route, navigation }) {
   const [gameState, setGameState] = useState(null);
   const [lastWin, setLastWin] = useState(null);
   const [showWin, setShowWin] = useState(false);
+  const [bonusRemaining, setBonusRemaining] = useState({
+    [BONUS_TYPES.AUTO_1]: MAX_BONUS_USES[BONUS_TYPES.AUTO_1],
+    [BONUS_TYPES.AUTO_5]: MAX_BONUS_USES[BONUS_TYPES.AUTO_5],
+    [BONUS_TYPES.CLOSE_MISSED]: MAX_BONUS_USES[BONUS_TYPES.CLOSE_MISSED],
+  });
+  const [showBonusPanel, setShowBonusPanel] = useState(false);
 
   /**
    * Barcha timerlarni tozalash (xavfsiz)
@@ -92,6 +98,12 @@ export default function GameScreen({ route, navigation }) {
       setGameState(state);
       setLastWin(null);
       setShowWin(false);
+      setShowBonusPanel(false);
+      setBonusRemaining({
+        [BONUS_TYPES.AUTO_1]: MAX_BONUS_USES[BONUS_TYPES.AUTO_1],
+        [BONUS_TYPES.AUTO_5]: MAX_BONUS_USES[BONUS_TYPES.AUTO_5],
+        [BONUS_TYPES.CLOSE_MISSED]: MAX_BONUS_USES[BONUS_TYPES.CLOSE_MISSED],
+      });
     }
   }, [mode, clearAllTimers]);
 
@@ -112,6 +124,16 @@ export default function GameScreen({ route, navigation }) {
     if (!mountedRef.current) return;
 
     setGameState({ ...result });
+
+    // Bonus qolganlarini yangilash
+    const game = gameRef.current;
+    if (game) {
+      setBonusRemaining({
+        [BONUS_TYPES.AUTO_1]: game.getBonusRemaining(BONUS_TYPES.AUTO_1, MAX_BONUS_USES[BONUS_TYPES.AUTO_1]),
+        [BONUS_TYPES.AUTO_5]: game.getBonusRemaining(BONUS_TYPES.AUTO_5, MAX_BONUS_USES[BONUS_TYPES.AUTO_5]),
+        [BONUS_TYPES.CLOSE_MISSED]: game.getBonusRemaining(BONUS_TYPES.CLOSE_MISSED, MAX_BONUS_USES[BONUS_TYPES.CLOSE_MISSED]),
+      });
+    }
 
     // Ovoz effekti (async, xavfsiz)
     try { playDrawSound(); } catch (_) { /* ignore */ }
@@ -212,6 +234,60 @@ export default function GameScreen({ route, navigation }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [gameState?.isGameOver]);
 
+  // Bonus ishlatish
+  const useBonus = useCallback((bonusType) => {
+    const game = gameRef.current;
+    if (!game || !mountedRef.current) return;
+
+    let result;
+    try {
+      if (bonusType === BONUS_TYPES.AUTO_1) {
+        if (bonusRemaining[BONUS_TYPES.AUTO_1] <= 0) return;
+        result = game.useAutoCloseOne();
+      } else if (bonusType === BONUS_TYPES.AUTO_5) {
+        if (bonusRemaining[BONUS_TYPES.AUTO_5] <= 0) return;
+        result = game.useAutoCloseFive();
+      } else if (bonusType === BONUS_TYPES.CLOSE_MISSED) {
+        if (bonusRemaining[BONUS_TYPES.CLOSE_MISSED] <= 0) return;
+        result = game.useCloseMissed();
+      }
+    } catch (_) {
+      return;
+    }
+
+    if (!result || !mountedRef.current) return;
+
+    try { playClickSound(); } catch (_) { /* ignore */ }
+
+    const state = game.getState();
+    setGameState(state);
+    setBonusRemaining({
+      [BONUS_TYPES.AUTO_1]: game.getBonusRemaining(BONUS_TYPES.AUTO_1, MAX_BONUS_USES[BONUS_TYPES.AUTO_1]),
+      [BONUS_TYPES.AUTO_5]: game.getBonusRemaining(BONUS_TYPES.AUTO_5, MAX_BONUS_USES[BONUS_TYPES.AUTO_5]),
+      [BONUS_TYPES.CLOSE_MISSED]: game.getBonusRemaining(BONUS_TYPES.CLOSE_MISSED, MAX_BONUS_USES[BONUS_TYPES.CLOSE_MISSED]),
+    });
+
+    if (result.winResult && result.winResult.type !== WIN_TYPES.NONE) {
+      setLastWin(result.winResult);
+      setShowWin(true);
+      if (settingsRef.current?.vibrationEnabled !== false) {
+        try { Vibration.vibrate(500); } catch (_) { /* ignore */ }
+      }
+      try { playWinSound(); } catch (_) { /* ignore */ }
+      if (winTimerRef.current) clearTimeout(winTimerRef.current);
+      winTimerRef.current = setTimeout(() => {
+        winTimerRef.current = null;
+        if (mountedRef.current) setShowWin(false);
+      }, 2500);
+    }
+
+    if (!result.success && result.error) {
+      Alert.alert('Diqqat', result.error);
+    }
+  }, [bonusRemaining]);
+
+  const totalBonusLeft = bonusRemaining[BONUS_TYPES.AUTO_1] + bonusRemaining[BONUS_TYPES.AUTO_5] + bonusRemaining[BONUS_TYPES.CLOSE_MISSED];
+
   if (!gameState) {
     return (
       <View style={styles.container}>
@@ -293,6 +369,55 @@ export default function GameScreen({ route, navigation }) {
           />
         )}
       </ScrollView>
+
+      {/* Bonus panel */}
+      {!gameState.isGameOver && totalBonusLeft > 0 && (
+        <View style={styles.bonusSection}>
+          <TouchableOpacity
+            style={styles.bonusToggle}
+            onPress={() => {
+              try { playClickSound(); } catch (_) { /* ignore */ }
+              setShowBonusPanel(prev => !prev);
+            }}
+          >
+            <Text style={styles.bonusToggleIcon}>{showBonusPanel ? '🔽' : '🔼'}</Text>
+            <Text style={styles.bonusToggleText}>
+              Bonuslar ({totalBonusLeft})
+            </Text>
+          </TouchableOpacity>
+          {showBonusPanel && (
+            <View style={styles.bonusPanel}>
+              <TouchableOpacity
+                style={[styles.bonusBtn, styles.bonusBtn1, bonusRemaining[BONUS_TYPES.AUTO_1] <= 0 && styles.bonusBtnDisabled]}
+                onPress={() => useBonus(BONUS_TYPES.AUTO_1)}
+                disabled={bonusRemaining[BONUS_TYPES.AUTO_1] <= 0}
+              >
+                <Text style={styles.bonusBtnIcon}>🎯</Text>
+                <Text style={styles.bonusBtnLabel}>1 ta ochish</Text>
+                <Text style={styles.bonusBtnCount}>x{bonusRemaining[BONUS_TYPES.AUTO_1]}</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.bonusBtn, styles.bonusBtn5, bonusRemaining[BONUS_TYPES.AUTO_5] <= 0 && styles.bonusBtnDisabled]}
+                onPress={() => useBonus(BONUS_TYPES.AUTO_5)}
+                disabled={bonusRemaining[BONUS_TYPES.AUTO_5] <= 0}
+              >
+                <Text style={styles.bonusBtnIcon}>🎰</Text>
+                <Text style={styles.bonusBtnLabel}>5 ta ochish</Text>
+                <Text style={styles.bonusBtnCount}>x{bonusRemaining[BONUS_TYPES.AUTO_5]}</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.bonusBtn, styles.bonusBtnMissed, bonusRemaining[BONUS_TYPES.CLOSE_MISSED] <= 0 && styles.bonusBtnDisabled]}
+                onPress={() => useBonus(BONUS_TYPES.CLOSE_MISSED)}
+                disabled={bonusRemaining[BONUS_TYPES.CLOSE_MISSED] <= 0}
+              >
+                <Text style={styles.bonusBtnIcon}>🔍</Text>
+                <Text style={styles.bonusBtnLabel}>O'tkazilgan</Text>
+                <Text style={styles.bonusBtnCount}>x{bonusRemaining[BONUS_TYPES.CLOSE_MISSED]}</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+        </View>
+      )}
 
       {/* Chiqarish tugmasi / O'yin tugaganda natija */}
       <View style={styles.bottomSection}>
@@ -444,5 +569,72 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
     padding: 12,
+  },
+  bonusSection: {
+    paddingHorizontal: 16,
+    paddingBottom: 4,
+  },
+  bonusToggle: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 8,
+    backgroundColor: COLORS.BG_MEDIUM,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#3a3a7a',
+  },
+  bonusToggleIcon: {
+    fontSize: 12,
+    marginRight: 6,
+  },
+  bonusToggleText: {
+    color: COLORS.GOLD,
+    fontSize: 14,
+    fontWeight: 'bold',
+  },
+  bonusPanel: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 6,
+    gap: 8,
+  },
+  bonusBtn: {
+    flex: 1,
+    alignItems: 'center',
+    paddingVertical: 10,
+    borderRadius: 10,
+    borderWidth: 1,
+  },
+  bonusBtn1: {
+    backgroundColor: '#1a2a1a',
+    borderColor: '#2a5a2a',
+  },
+  bonusBtn5: {
+    backgroundColor: '#1a1a2a',
+    borderColor: '#2a2a5a',
+  },
+  bonusBtnMissed: {
+    backgroundColor: '#2a1a1a',
+    borderColor: '#5a2a2a',
+  },
+  bonusBtnDisabled: {
+    opacity: 0.35,
+  },
+  bonusBtnIcon: {
+    fontSize: 20,
+    marginBottom: 2,
+  },
+  bonusBtnLabel: {
+    color: COLORS.WHITE,
+    fontSize: 11,
+    fontWeight: '600',
+    textAlign: 'center',
+  },
+  bonusBtnCount: {
+    color: COLORS.GOLD,
+    fontSize: 12,
+    fontWeight: 'bold',
+    marginTop: 2,
   },
 });

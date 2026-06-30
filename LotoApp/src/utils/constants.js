@@ -68,5 +68,18 @@ export const DEFAULT_SETTINGS = {
   vibrationEnabled: true,
   language: 'uz',
   fastDrawInterval: 5000,
-  cardCount: 1,
+  cardCount: 3,
+};
+
+// Bonus turlari
+export const BONUS_TYPES = {
+  AUTO_1: 'auto_1',     // 1 ta raqamni avto-yopish
+  AUTO_5: 'auto_5',     // 5 ta raqamni avto-yopish
+  CLOSE_MISSED: 'close_missed', // O'tkazib yuborilgan raqamni yopish
+};
+
+export const MAX_BONUS_USES = {
+  [BONUS_TYPES.AUTO_1]: 3,
+  [BONUS_TYPES.AUTO_5]: 2,
+  [BONUS_TYPES.CLOSE_MISSED]: 3,
 };
