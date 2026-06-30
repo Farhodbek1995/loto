@@ -1,6 +1,6 @@
 import 'react-native-gesture-handler';
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, ScrollView, Platform } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Platform, AppRegistry } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -140,3 +140,6 @@ export default function App() {
     </ErrorBoundary>
   );
 }
+
+// Native tomon "main" komponentni izlaydi — registerComponent bo'lmasa crash bo'ladi
+AppRegistry.registerComponent('main', () => App);
